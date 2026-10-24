@@ -1,0 +1,1679 @@
+{
+  "version": 1,
+  "updated": "2026-10-12",
+  "count": 95,
+  "presets": [
+    {
+      "pluginId": "builtin.viora.anime-vector",
+      "presetId": "builtin.anime-vector",
+      "name": {
+        "zh": "Anime Vector",
+        "en": "Anime Vector"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Anime",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.anime-vector.zip",
+      "description": {
+        "zh": "Anime Vector",
+        "en": "Anime Vector"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.ascii-art",
+      "presetId": "builtin.ascii-art",
+      "name": {
+        "zh": "ASCII字符画",
+        "en": "ASCII Art"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Experimental",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.ascii-art.zip",
+      "description": {
+        "zh": "ASCII字符画",
+        "en": "ASCII Art"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.blueprint",
+      "presetId": "builtin.blueprint",
+      "name": {
+        "zh": "蓝图",
+        "en": "Blueprint"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.PaperCraft",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.blueprint.zip",
+      "description": {
+        "zh": "蓝图",
+        "en": "Blueprint"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.chalkboard",
+      "presetId": "builtin.chalkboard",
+      "name": {
+        "zh": "黑板粉笔",
+        "en": "Chalkboard"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.PaperCraft",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.chalkboard.zip",
+      "description": {
+        "zh": "黑板粉笔",
+        "en": "Chalkboard"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.chrome",
+      "presetId": "builtin.chrome",
+      "name": {
+        "zh": "镀铬",
+        "en": "Chrome"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Metallic",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.chrome.zip",
+      "description": {
+        "zh": "镀铬",
+        "en": "Chrome"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.clay",
+      "presetId": "builtin.clay",
+      "name": {
+        "zh": "黏土雕塑",
+        "en": "Clay Sculpture"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.ThreeD",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.clay.zip",
+      "description": {
+        "zh": "黏土雕塑",
+        "en": "Clay Sculpture"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.collage",
+      "presetId": "builtin.collage",
+      "name": {
+        "zh": "拼贴艺术",
+        "en": "Collage"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Collage",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.collage.zip",
+      "description": {
+        "zh": "拼贴艺术",
+        "en": "Collage"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.comic",
+      "presetId": "builtin.comic",
+      "name": {
+        "zh": "漫画",
+        "en": "Comic Book"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Anime",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.comic.zip",
+      "description": {
+        "zh": "漫画",
+        "en": "Comic Book"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.cross-hatching",
+      "presetId": "builtin.cross-hatching",
+      "name": {
+        "zh": "交叉排线",
+        "en": "Cross-Hatching"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Sketch",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.cross-hatching.zip",
+      "description": {
+        "zh": "交叉排线",
+        "en": "Cross-Hatching"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.crt",
+      "presetId": "builtin.crt",
+      "name": {
+        "zh": "CRT复古",
+        "en": "CRT Retro"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.RetroFilm",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.crt.zip",
+      "description": {
+        "zh": "CRT复古",
+        "en": "CRT Retro"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.dithered",
+      "presetId": "builtin.dithered",
+      "name": {
+        "zh": "抖动图",
+        "en": "Dithered"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Pixel",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.dithered.zip",
+      "description": {
+        "zh": "抖动图",
+        "en": "Dithered"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.double-exposure",
+      "presetId": "builtin.double-exposure",
+      "name": {
+        "zh": "双重曝光",
+        "en": "Double Exposure"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Photography",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.double-exposure.zip",
+      "description": {
+        "zh": "双重曝光",
+        "en": "Double Exposure"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.embroidery",
+      "presetId": "builtin.embroidery",
+      "name": {
+        "zh": "刺绣",
+        "en": "Embroidery"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Handcraft",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.embroidery.zip",
+      "description": {
+        "zh": "刺绣",
+        "en": "Embroidery"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.etching",
+      "presetId": "builtin.etching",
+      "name": {
+        "zh": "蚀刻版画",
+        "en": "Etching"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Printmaking",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.etching.zip",
+      "description": {
+        "zh": "蚀刻版画",
+        "en": "Etching"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.film-negative",
+      "presetId": "builtin.film-negative",
+      "name": {
+        "zh": "胶片负片",
+        "en": "Film Negative"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.RetroFilm",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.film-negative.zip",
+      "description": {
+        "zh": "胶片负片",
+        "en": "Film Negative"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.fresco",
+      "presetId": "builtin.fresco",
+      "name": {
+        "zh": "湿壁画",
+        "en": "Fresco"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.OilPainting",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.fresco.zip",
+      "description": {
+        "zh": "湿壁画",
+        "en": "Fresco"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.glitch",
+      "presetId": "builtin.glitch",
+      "name": {
+        "zh": "故障艺术",
+        "en": "Glitch Art"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Cyberpunk",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.glitch.zip",
+      "description": {
+        "zh": "故障艺术",
+        "en": "Glitch Art"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.globe-relief",
+      "presetId": "builtin.globe-relief",
+      "name": {
+        "zh": "浮雕",
+        "en": "Relief"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.ThreeD",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.globe-relief.zip",
+      "description": {
+        "zh": "浮雕",
+        "en": "Relief"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.glowing-wireframe",
+      "presetId": "builtin.glowing-wireframe",
+      "name": {
+        "zh": "发光线框",
+        "en": "Glowing Wireframe"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Neon",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.glowing-wireframe.zip",
+      "description": {
+        "zh": "发光线框",
+        "en": "Glowing Wireframe"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.halftone",
+      "presetId": "builtin.halftone",
+      "name": {
+        "zh": "半色调",
+        "en": "Halftone"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.RetroFilm",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.halftone.zip",
+      "description": {
+        "zh": "半色调",
+        "en": "Halftone"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.holographic",
+      "presetId": "builtin.holographic",
+      "name": {
+        "zh": "全息",
+        "en": "Holographic"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Neon",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.holographic.zip",
+      "description": {
+        "zh": "全息",
+        "en": "Holographic"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.infrared",
+      "presetId": "builtin.infrared",
+      "name": {
+        "zh": "红外摄影",
+        "en": "Infrared"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Photography",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.infrared.zip",
+      "description": {
+        "zh": "红外摄影",
+        "en": "Infrared"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.isometric-diorama",
+      "presetId": "builtin.isometric-diorama",
+      "name": {
+        "zh": "等距微缩场景",
+        "en": "Isometric Diorama"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.ThreeD",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.isometric-diorama.zip",
+      "description": {
+        "zh": "等距微缩场景",
+        "en": "Isometric Diorama"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.kaleidoscope",
+      "presetId": "builtin.kaleidoscope",
+      "name": {
+        "zh": "万花筒",
+        "en": "Kaleidoscope"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.GlassMosaic",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.kaleidoscope.zip",
+      "description": {
+        "zh": "万花筒",
+        "en": "Kaleidoscope"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.knitted",
+      "presetId": "builtin.knitted",
+      "name": {
+        "zh": "针织",
+        "en": "Knitted"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Handcraft",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.knitted.zip",
+      "description": {
+        "zh": "针织",
+        "en": "Knitted"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.light-painting",
+      "presetId": "builtin.light-painting",
+      "name": {
+        "zh": "光绘",
+        "en": "Light Painting"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.LightParticles",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.light-painting.zip",
+      "description": {
+        "zh": "光绘",
+        "en": "Light Painting"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.liquid-marble",
+      "presetId": "builtin.liquid-marble",
+      "name": {
+        "zh": "液体大理石",
+        "en": "Liquid Marble"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Metallic",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.liquid-marble.zip",
+      "description": {
+        "zh": "液体大理石",
+        "en": "Liquid Marble"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.liquid-metal",
+      "presetId": "builtin.liquid-metal",
+      "name": {
+        "zh": "液态金属",
+        "en": "Liquid Metal"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Metallic",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.liquid-metal.zip",
+      "description": {
+        "zh": "液态金属",
+        "en": "Liquid Metal"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.low-poly",
+      "presetId": "builtin.low-poly",
+      "name": {
+        "zh": "低多边形",
+        "en": "Low Poly"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.ThreeD",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.low-poly.zip",
+      "description": {
+        "zh": "低多边形",
+        "en": "Low Poly"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.metal-engraving",
+      "presetId": "builtin.metal-engraving",
+      "name": {
+        "zh": "金属雕刻",
+        "en": "Metal Engraving"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Printmaking",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.metal-engraving.zip",
+      "description": {
+        "zh": "金属雕刻",
+        "en": "Metal Engraving"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.mosaic",
+      "presetId": "builtin.mosaic",
+      "name": {
+        "zh": "马赛克",
+        "en": "Mosaic"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.GlassMosaic",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.mosaic.zip",
+      "description": {
+        "zh": "马赛克",
+        "en": "Mosaic"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.mosaic-glass",
+      "presetId": "builtin.mosaic-glass",
+      "name": {
+        "zh": "玻璃镶嵌",
+        "en": "Mosaic Glass"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.GlassMosaic",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.mosaic-glass.zip",
+      "description": {
+        "zh": "玻璃镶嵌",
+        "en": "Mosaic Glass"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.neon-cyberpunk",
+      "presetId": "builtin.neon-cyberpunk",
+      "name": {
+        "zh": "霓虹赛博",
+        "en": "Neon Cyberpunk"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Cyberpunk",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.neon-cyberpunk.zip",
+      "description": {
+        "zh": "霓虹赛博",
+        "en": "Neon Cyberpunk"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.neon-sign",
+      "presetId": "builtin.neon-sign",
+      "name": {
+        "zh": "霓虹灯牌",
+        "en": "Neon Sign"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Neon",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.neon-sign.zip",
+      "description": {
+        "zh": "霓虹灯牌",
+        "en": "Neon Sign"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.newspaper",
+      "presetId": "builtin.newspaper",
+      "name": {
+        "zh": "报纸印刷",
+        "en": "Newspaper"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Printmaking",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.newspaper.zip",
+      "description": {
+        "zh": "报纸印刷",
+        "en": "Newspaper"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.oil-painting",
+      "presetId": "builtin.oil-painting",
+      "name": {
+        "zh": "梵高油画",
+        "en": "Van Gogh Oil"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.OilPainting",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.oil-painting.zip",
+      "description": {
+        "zh": "梵高油画",
+        "en": "Van Gogh Oil"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.origami",
+      "presetId": "builtin.origami",
+      "name": {
+        "zh": "折纸",
+        "en": "Origami"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.PaperCraft",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.origami.zip",
+      "description": {
+        "zh": "折纸",
+        "en": "Origami"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.paper-cut",
+      "presetId": "builtin.paper-cut",
+      "name": {
+        "zh": "剪纸",
+        "en": "Paper Cut"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.PaperCraft",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.paper-cut.zip",
+      "description": {
+        "zh": "剪纸",
+        "en": "Paper Cut"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.pixel-art",
+      "presetId": "builtin.pixel-art",
+      "name": {
+        "zh": "像素艺术",
+        "en": "Pixel Art"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Pixel",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.pixel-art.zip",
+      "description": {
+        "zh": "像素艺术",
+        "en": "Pixel Art"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.polaroid",
+      "presetId": "builtin.polaroid",
+      "name": {
+        "zh": "拍立得",
+        "en": "Polaroid"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.RetroFilm",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.polaroid.zip",
+      "description": {
+        "zh": "拍立得",
+        "en": "Polaroid"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.porcelain",
+      "presetId": "builtin.porcelain",
+      "name": {
+        "zh": "瓷器",
+        "en": "Porcelain"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Handcraft",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.porcelain.zip",
+      "description": {
+        "zh": "瓷器",
+        "en": "Porcelain"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.risograph",
+      "presetId": "builtin.risograph",
+      "name": {
+        "zh": "孔版印刷",
+        "en": "Risograph"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Printmaking",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.risograph.zip",
+      "description": {
+        "zh": "孔版印刷",
+        "en": "Risograph"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.sand-art",
+      "presetId": "builtin.sand-art",
+      "name": {
+        "zh": "沙画",
+        "en": "Sand Art"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.LightParticles",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.sand-art.zip",
+      "description": {
+        "zh": "沙画",
+        "en": "Sand Art"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.sketch",
+      "presetId": "builtin.sketch",
+      "name": {
+        "zh": "简笔画",
+        "en": "Pencil Sketch"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Sketch",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.sketch.zip",
+      "description": {
+        "zh": "简笔画",
+        "en": "Pencil Sketch"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.smoke-art",
+      "presetId": "builtin.smoke-art",
+      "name": {
+        "zh": "烟雾",
+        "en": "Smoke Art"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.LightParticles",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.smoke-art.zip",
+      "description": {
+        "zh": "烟雾",
+        "en": "Smoke Art"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.stained-glass",
+      "presetId": "builtin.stained-glass",
+      "name": {
+        "zh": "彩色玻璃",
+        "en": "Stained Glass"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.GlassMosaic",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.stained-glass.zip",
+      "description": {
+        "zh": "彩色玻璃",
+        "en": "Stained Glass"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.stippling",
+      "presetId": "builtin.stippling",
+      "name": {
+        "zh": "点描",
+        "en": "Stippling"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Sketch",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.stippling.zip",
+      "description": {
+        "zh": "点描",
+        "en": "Stippling"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.string-art",
+      "presetId": "builtin.string-art",
+      "name": {
+        "zh": "绳线艺术",
+        "en": "String Art"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Handcraft",
+      "version": "1.0.1",
+      "package": "packages/builtin.viora.string-art.zip",
+      "description": {
+        "zh": "绳线艺术",
+        "en": "String Art"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.tape-art",
+      "presetId": "builtin.tape-art",
+      "name": {
+        "zh": "胶带艺术",
+        "en": "Tape Art"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.PaperCraft",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.tape-art.zip",
+      "description": {
+        "zh": "胶带艺术",
+        "en": "Tape Art"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.thermal",
+      "presetId": "builtin.thermal",
+      "name": {
+        "zh": "热成像",
+        "en": "Thermal Camera"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Photography",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.thermal.zip",
+      "description": {
+        "zh": "热成像",
+        "en": "Thermal Camera"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.torn-paper",
+      "presetId": "builtin.torn-paper",
+      "name": {
+        "zh": "撕纸",
+        "en": "Torn Paper"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.PaperCraft",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.torn-paper.zip",
+      "description": {
+        "zh": "撕纸",
+        "en": "Torn Paper"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.watercolor",
+      "presetId": "builtin.watercolor",
+      "name": {
+        "zh": "水彩画",
+        "en": "Watercolor"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Watercolor",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.watercolor.zip",
+      "description": {
+        "zh": "水彩画",
+        "en": "Watercolor"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.wax-crayon",
+      "presetId": "builtin.wax-crayon",
+      "name": {
+        "zh": "蜡笔",
+        "en": "Wax Crayon"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Handcraft",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.wax-crayon.zip",
+      "description": {
+        "zh": "蜡笔",
+        "en": "Wax Crayon"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.woodcut",
+      "presetId": "builtin.woodcut",
+      "name": {
+        "zh": "木刻版画",
+        "en": "Woodcut"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Printmaking",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.woodcut.zip",
+      "description": {
+        "zh": "木刻版画",
+        "en": "Woodcut"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.xray",
+      "presetId": "builtin.xray",
+      "name": {
+        "zh": "X光",
+        "en": "X-Ray"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Photography",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.xray.zip",
+      "description": {
+        "zh": "X光",
+        "en": "X-Ray"
+      }
+    },
+    {
+      "pluginId": "builtin.viora.ukiyo-e",
+      "presetId": "builtin.ukiyo-e",
+      "name": {
+        "zh": "浮世绘",
+        "en": "Ukiyo-e"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Traditional",
+      "version": "1.1.0",
+      "package": "packages/builtin.viora.ukiyo-e.zip",
+      "tags": [
+        "木版画"
+      ],
+      "description": {
+        "zh": "浮世绘木版画:平面套色、靛蓝墨线与和纸肌理。",
+        "en": "Ukiyo-e woodblock print: flat color keys, indigo ink outlines and washi paper grain."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.art-nouveau",
+      "presetId": "builtin.art-nouveau",
+      "name": {
+        "zh": "新艺术",
+        "en": "Art Nouveau"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Illustration",
+      "version": "1.1.0",
+      "package": "packages/builtin.viora.art-nouveau.zip",
+      "tags": [
+        "装饰"
+      ],
+      "description": {
+        "zh": "新艺术运动:泥金橄榄色调、随形体流动的有机曲线与装饰边框。",
+        "en": "Art Nouveau: muted gold-olive tones, organic flowing lines and an ornamental border."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.art-deco",
+      "presetId": "builtin.art-deco",
+      "name": {
+        "zh": "装饰艺术",
+        "en": "Art Deco"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Illustration",
+      "version": "1.1.0",
+      "package": "packages/builtin.viora.art-deco.zip",
+      "tags": [
+        "几何"
+      ],
+      "description": {
+        "zh": "装饰艺术:中心对称构图、黑金阶梯套色与旭日放射纹。",
+        "en": "Art Deco: symmetric composition, black-and-gold stepped palette and sunburst rays."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.bauhaus",
+      "presetId": "builtin.bauhaus",
+      "name": {
+        "zh": "包豪斯",
+        "en": "Bauhaus"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Illustration",
+      "version": "1.1.0",
+      "package": "packages/builtin.viora.bauhaus.zip",
+      "tags": [
+        "几何"
+      ],
+      "description": {
+        "zh": "包豪斯几何抽象:网格化红黄蓝黑原色色面与黑色结构线。",
+        "en": "Bauhaus geometric abstraction: gridded primary-color planes with black structure lines."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.swiss-design",
+      "presetId": "builtin.swiss-design",
+      "name": {
+        "zh": "瑞士设计",
+        "en": "Swiss Style"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Printmaking",
+      "version": "1.1.0",
+      "package": "packages/builtin.viora.swiss-design.zip",
+      "tags": [
+        "海报"
+      ],
+      "description": {
+        "zh": "瑞士国际主义:严格网格、克制灰阶与瑞士红强调的海报画面。",
+        "en": "Swiss International Style: strict grid, restrained grayscale and Swiss-red accents."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.constructivism",
+      "presetId": "builtin.constructivism",
+      "name": {
+        "zh": "构成主义",
+        "en": "Constructivism"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Printmaking",
+      "version": "1.1.0",
+      "package": "packages/builtin.viora.constructivism.zip",
+      "tags": [
+        "宣传画"
+      ],
+      "description": {
+        "zh": "构成主义宣传画:黑红米白三色、斜向楔形色带与粗糙印刷颗粒。",
+        "en": "Constructivist poster: black/red/cream tri-color, diagonal wedges and coarse print grain."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.de-stijl",
+      "presetId": "builtin.de-stijl",
+      "name": {
+        "zh": "风格派",
+        "en": "De Stijl"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Illustration",
+      "version": "1.1.0",
+      "package": "packages/builtin.viora.de-stijl.zip",
+      "tags": [
+        "蒙德里安"
+      ],
+      "description": {
+        "zh": "风格派(蒙德里安):水平垂直黑线网格,少量红黄蓝原色格子。",
+        "en": "De Stijl (Mondrian): orthogonal black grid with a few red/yellow/blue cells."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.cubism",
+      "presetId": "builtin.cubism",
+      "name": {
+        "zh": "立体主义",
+        "en": "Cubism"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.OilPainting",
+      "version": "1.1.0",
+      "package": "packages/builtin.viora.cubism.zip",
+      "tags": [
+        "多视角"
+      ],
+      "description": {
+        "zh": "立体主义:多视角碎面重构,高饱和平涂与深色棱线。",
+        "en": "Cubism: multi-view faceted reconstruction with saturated flat colors and dark ridges."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.futurism",
+      "presetId": "builtin.futurism",
+      "name": {
+        "zh": "未来主义",
+        "en": "Futurism"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Experimental",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.futurism.zip",
+      "tags": [
+        "动态",
+        "艺术运动"
+      ],
+      "description": {
+        "zh": "未来主义:方向性动态残影、斜向力度线与机械速度感。",
+        "en": "Futurism: directional motion trails, force lines and mechanical speed."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.surrealism",
+      "presetId": "builtin.surrealism",
+      "name": {
+        "zh": "超现实主义",
+        "en": "Surrealism"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Experimental",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.surrealism.zip",
+      "tags": [
+        "梦境",
+        "艺术运动"
+      ],
+      "description": {
+        "zh": "超现实主义:梦境空间错位、漂浮碎片与暮色光晕。",
+        "en": "Surrealism: dreamlike displacement, drifting fragments and dusk glow."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.dada",
+      "presetId": "builtin.dada",
+      "name": {
+        "zh": "达达主义",
+        "en": "Dada"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Collage",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.dada.zip",
+      "tags": [
+        "拼贴",
+        "艺术运动"
+      ],
+      "description": {
+        "zh": "达达主义:报纸拼贴肌理、撕裂白边与反秩序的黑白红点缀。",
+        "en": "Dada: newsprint collage grain, torn white edges and anti-order accents."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.suprematism",
+      "presetId": "builtin.suprematism",
+      "name": {
+        "zh": "至上主义",
+        "en": "Suprematism"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Illustration",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.suprematism.zip",
+      "tags": [
+        "几何",
+        "艺术运动"
+      ],
+      "description": {
+        "zh": "至上主义:画面化为近单色构成,少量悬浮几何点缀。",
+        "en": "Suprematism: near-monochrome composition with a few floating geometric accents."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.memphis",
+      "presetId": "builtin.memphis",
+      "name": {
+        "zh": "孟菲斯设计",
+        "en": "Memphis Design"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Illustration",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.memphis.zip",
+      "tags": [
+        "波普",
+        "设计"
+      ],
+      "description": {
+        "zh": "孟菲斯设计:糖果色调、波点波浪与三角形的轻装饰。",
+        "en": "Memphis design: candy tones with light dot, wave and triangle ornaments."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.brutalism",
+      "presetId": "builtin.brutalism",
+      "name": {
+        "zh": "粗野主义",
+        "en": "Brutalism"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Experimental",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.brutalism.zip",
+      "tags": [
+        "高对比",
+        "网页"
+      ],
+      "description": {
+        "zh": "粗野主义:高对比硬调、像素化区域与粗暴黑框。",
+        "en": "Brutalism: harsh contrast, pixelated patches and a brutal black frame."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.psychedelic",
+      "presetId": "builtin.psychedelic",
+      "name": {
+        "zh": "迷幻艺术",
+        "en": "Psychedelic"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Experimental",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.psychedelic.zip",
+      "tags": [
+        "波普",
+        "迷幻"
+      ],
+      "description": {
+        "zh": "迷幻艺术:轻漩涡扭曲、荧光色环与高饱和撞色。",
+        "en": "Psychedelia: gentle swirl warp, neon hue rings and saturated clashes."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.vaporwave",
+      "presetId": "builtin.vaporwave",
+      "name": {
+        "zh": "蒸汽波",
+        "en": "Vaporwave"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Cyberpunk",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.vaporwave.zip",
+      "tags": [
+        "复古",
+        "网络"
+      ],
+      "description": {
+        "zh": "蒸汽波:粉紫青渐变、扫描线与轻微色差衰减。",
+        "en": "Vaporwave: pink-purple-cyan gradients, scanlines and slight chromatic decay."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.synthwave",
+      "presetId": "builtin.synthwave",
+      "name": {
+        "zh": "合成器波",
+        "en": "Synthwave"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Neon",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.synthwave.zip",
+      "tags": [
+        "霓虹",
+        "复古"
+      ],
+      "description": {
+        "zh": "合成器波:暮色渐变、霓虹轮廓与底部透视网格。",
+        "en": "Synthwave: dusk gradient, neon outlines and a perspective grid."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.y2k",
+      "presetId": "builtin.y2k",
+      "name": {
+        "zh": "Y2K 千禧",
+        "en": "Y2K"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.RetroFilm",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.y2k.zip",
+      "tags": [
+        "千禧",
+        "数码"
+      ],
+      "description": {
+        "zh": "Y2K:镀铬渐变、镭射光泽与泡泡高光。",
+        "en": "Y2K: chrome gradients, holographic sheen and bubble gloss."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.frutiger-aero",
+      "presetId": "builtin.frutiger-aero",
+      "name": {
+        "zh": "Frutiger Aero",
+        "en": "Frutiger Aero"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.RetroFilm",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.frutiger-aero.zip",
+      "tags": [
+        "清新",
+        "数码"
+      ],
+      "description": {
+        "zh": "Frutiger Aero:明快蓝绿、水润光泽与乌托邦清新感。",
+        "en": "Frutiger Aero: vivid blues and greens, glossy freshness, utopian clarity."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.geocities",
+      "presetId": "builtin.geocities",
+      "name": {
+        "zh": "GeoCities",
+        "en": "GeoCities"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Pixel",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.geocities.zip",
+      "tags": [
+        "网页",
+        "复古"
+      ],
+      "description": {
+        "zh": "GeoCities:Web 安全色、抖动纹理与经典网页立体边框。",
+        "en": "GeoCities: web-safe colors, dithered texture and classic page bevels."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.illuminated-manuscript",
+      "presetId": "builtin.illuminated-manuscript",
+      "name": {
+        "zh": "泥金手抄本",
+        "en": "Illuminated Manuscript"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Traditional",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.illuminated-manuscript.zip",
+      "tags": [
+        "中世纪",
+        "手抄本"
+      ],
+      "description": {
+        "zh": "泥金手抄本:羊皮纸底、金色泥金与墨线插画。",
+        "en": "Illuminated manuscript: parchment, gold leaf and ink illustration."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.byzantine-icon",
+      "presetId": "builtin.byzantine-icon",
+      "name": {
+        "zh": "拜占庭圣像",
+        "en": "Byzantine Icon"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Traditional",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.byzantine-icon.zip",
+      "tags": [
+        "圣像",
+        "中世纪"
+      ],
+      "description": {
+        "zh": "拜占庭圣像:平面圣像色、金色平涂与深色轮廓。",
+        "en": "Byzantine icon: flat sacred palette, gold fields and dark outlines."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.egyptian-hieroglyph",
+      "presetId": "builtin.egyptian-hieroglyph",
+      "name": {
+        "zh": "埃及象形",
+        "en": "Egyptian Hieroglyph"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Traditional",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.egyptian-hieroglyph.zip",
+      "tags": [
+        "古埃及",
+        "石刻"
+      ],
+      "description": {
+        "zh": "埃及象形:砂岩色盘、雕刻轮廓与横向栏线。",
+        "en": "Egyptian hieroglyph: sandstone palette, carved outlines and register lines."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.persian-miniature",
+      "presetId": "builtin.persian-miniature",
+      "name": {
+        "zh": "波斯细密画",
+        "en": "Persian Miniature"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Illustration",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.persian-miniature.zip",
+      "tags": [
+        "细密画",
+        "波斯"
+      ],
+      "description": {
+        "zh": "波斯细密画:宝石色盘、平面细节与蔓草边框。",
+        "en": "Persian miniature: jewel palette, flat detail and an arabesque border."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.mughal-miniature",
+      "presetId": "builtin.mughal-miniature",
+      "name": {
+        "zh": "莫卧儿细密画",
+        "en": "Mughal Miniature"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Illustration",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.mughal-miniature.zip",
+      "tags": [
+        "细密画",
+        "莫卧儿"
+      ],
+      "description": {
+        "zh": "莫卧儿细密画:宫廷暖色、花卉角饰与精细描线。",
+        "en": "Mughal miniature: courtly warmth, floral corners and fine linework."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.celtic-knotwork",
+      "presetId": "builtin.celtic-knotwork",
+      "name": {
+        "zh": "凯尔特结饰",
+        "en": "Celtic Knotwork"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Handcraft",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.celtic-knotwork.zip",
+      "tags": [
+        "结饰",
+        "凯尔特"
+      ],
+      "description": {
+        "zh": "凯尔特结饰:交织结纹覆盖画面,编股明暗随图像起伏。",
+        "en": "Celtic knotwork: interlaced strands woven over the image with woven shading."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.shadow-puppet",
+      "presetId": "builtin.shadow-puppet",
+      "name": {
+        "zh": "皮影戏",
+        "en": "Shadow Puppet"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Traditional",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.shadow-puppet.zip",
+      "tags": [
+        "皮影",
+        "舞台"
+      ],
+      "description": {
+        "zh": "皮影戏:皮革半透明的浓影、幕布纹理与幕后暖光。",
+        "en": "Shadow puppetry: leathery deep shadows, screen texture and warm stage light."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.moire",
+      "presetId": "builtin.moire",
+      "name": {
+        "zh": "莫尔干涉",
+        "en": "Moiré"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Experimental",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.moire.zip",
+      "tags": [
+        "干涉",
+        "科学"
+      ],
+      "description": {
+        "zh": "莫尔干涉:双栅干涉条纹随明暗流动。",
+        "en": "Moiré interference: dual-grid fringes flowing with luminance."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.voronoi",
+      "presetId": "builtin.voronoi",
+      "name": {
+        "zh": "Voronoi 晶胞",
+        "en": "Voronoi Cells"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.ThreeD",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.voronoi.zip",
+      "tags": [
+        "细胞",
+        "几何"
+      ],
+      "description": {
+        "zh": "Voronoi 晶胞:细密多边形细胞与轻描分界,画面保留。",
+        "en": "Voronoi cells: fine polygonal cells with light borders, image preserved."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.reaction-diffusion",
+      "presetId": "builtin.reaction-diffusion",
+      "name": {
+        "zh": "反应扩散",
+        "en": "Reaction Diffusion"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Experimental",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.reaction-diffusion.zip",
+      "tags": [
+        "图灵",
+        "算法"
+      ],
+      "description": {
+        "zh": "反应扩散:格雷-斯科特斑纹叠加在画面上生长。",
+        "en": "Reaction-diffusion: Gray-Scott patterns growing over the image."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.cellular-automaton",
+      "presetId": "builtin.cellular-automaton",
+      "name": {
+        "zh": "元胞自动机",
+        "en": "Cellular Automaton"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Pixel",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.cellular-automaton.zip",
+      "tags": [
+        "元胞",
+        "算法"
+      ],
+      "description": {
+        "zh": "元胞自动机:网格马赛克按局部规则演化,底层画面保留。",
+        "en": "Cellular automaton: grid mosaic evolving under local rules, image kept beneath."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.l-system",
+      "presetId": "builtin.l-system",
+      "name": {
+        "zh": "L-System 植物",
+        "en": "L-System"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Experimental",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.l-system.zip",
+      "tags": [
+        "分形",
+        "植物"
+      ],
+      "description": {
+        "zh": "L-System:分形植物沿画面底部生长,背景柔和化。",
+        "en": "L-System: fractal plants growing from the bottom edge over a softened background."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.metaball",
+      "presetId": "builtin.metaball",
+      "name": {
+        "zh": "Metaball 融合",
+        "en": "Metaball"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.ThreeD",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.metaball.zip",
+      "tags": [
+        "液态",
+        "等值面"
+      ],
+      "description": {
+        "zh": "Metaball:亮部互相融合成软体液滴,底层画面保留。",
+        "en": "Metaball: bright regions fuse into soft blobs over the kept image."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.flow-field",
+      "presetId": "builtin.flow-field",
+      "name": {
+        "zh": "流场",
+        "en": "Flow Field"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.LightParticles",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.flow-field.zip",
+      "tags": [
+        "流线",
+        "算法"
+      ],
+      "description": {
+        "zh": "流场:色彩沿湍流向量场轻微漂移成流线。",
+        "en": "Flow field: colors drifting slightly into streamlines along a turbulent field."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.schlieren",
+      "presetId": "builtin.schlieren",
+      "name": {
+        "zh": "纹影成像",
+        "en": "Schlieren"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Photography",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.schlieren.zip",
+      "tags": [
+        "科学",
+        "成像"
+      ],
+      "description": {
+        "zh": "纹影成像:刀口切割下的密度梯度黑白成像。",
+        "en": "Schlieren: knife-edge monochrome of density gradients."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.fisheye",
+      "presetId": "builtin.fisheye",
+      "name": {
+        "zh": "鱼眼",
+        "en": "Fisheye"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Photography",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.fisheye.zip",
+      "tags": [
+        "镜头",
+        "畸变"
+      ],
+      "description": {
+        "zh": "鱼眼:桶形畸变与圆形视野。",
+        "en": "Fisheye: barrel distortion with a circular field of view."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.solarization",
+      "presetId": "builtin.solarization",
+      "name": {
+        "zh": "太阳化",
+        "en": "Solarization"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.RetroFilm",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.solarization.zip",
+      "tags": [
+        "暗房",
+        "胶片"
+      ],
+      "description": {
+        "zh": "太阳化:局部亮度反转与暗房光晕。",
+        "en": "Solarization: partial luminance inversion with darkroom glow."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.long-exposure",
+      "presetId": "builtin.long-exposure",
+      "name": {
+        "zh": "长曝光",
+        "en": "Long Exposure"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Photography",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.long-exposure.zip",
+      "tags": [
+        "长曝",
+        "丝绢"
+      ],
+      "description": {
+        "zh": "长曝光:运动拖影与高光堆积的丝绢质感。",
+        "en": "Long exposure: motion trails with piled-up silky highlights."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.anaglyph-3d",
+      "presetId": "builtin.anaglyph-3d",
+      "name": {
+        "zh": "红蓝立体",
+        "en": "Anaglyph 3D"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Photography",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.anaglyph-3d.zip",
+      "tags": [
+        "立体",
+        "红青"
+      ],
+      "description": {
+        "zh": "红蓝立体:视差分离的红青双通道立体影像。",
+        "en": "Anaglyph 3D: red-cyan stereo with parallax depth."
+      }
+    },
+    {
+      "pluginId": "builtin.viora.lenticular",
+      "presetId": "builtin.lenticular",
+      "name": {
+        "zh": "光栅立体",
+        "en": "Lenticular"
+      },
+      "author": "Viora Team",
+      "category": "Style.Cat.Photography",
+      "version": "1.0.0",
+      "package": "packages/builtin.viora.lenticular.zip",
+      "tags": [
+        "光栅",
+        "立体"
+      ],
+      "description": {
+        "zh": "光栅立体:柱镜条带交织出裸眼立体错觉。",
+        "en": "Lenticular: lenticular interlacing for a naked-eye 3D illusion."
+      }
+    }
+  ]
+}
