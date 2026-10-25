@@ -1,6 +1,7 @@
 import { requireUser, getCurrentProfile } from "@/features/auth/session";
 import { ProfileForm } from "./profile-form";
 import { GithubLinkCard } from "./github-link-card";
+import { DangerZone } from "./danger-zone";
 
 type SearchParams = Promise<{ github?: string | string[] }>;
 
@@ -26,6 +27,7 @@ export async function ProfileSettings({
 
       <ProfileForm profile={profile} />
       <GithubLinkCard profile={profile} />
+      <DangerZone username={profile?.username ?? null} />
     </div>
   );
 }

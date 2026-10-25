@@ -79,6 +79,9 @@ function mapRowToRecord(
     repo_full_name: string;
     repo_url: string;
     repo_branch: string;
+    preview_before_url: string | null;
+    preview_after_url: string | null;
+    package_path: string | null;
   },
   owner: PluginOwnerInfo | undefined,
 ): PluginRecord | null {
@@ -92,17 +95,25 @@ function mapRowToRecord(
   if (row.description_zh) description.zh = row.description_zh;
   if (row.description_en) description.en = row.description_en;
 
+  // 作者上传了安装包(package_path 存在)时,直链指向仓库里的真实 zip;
+  // 否则回退到源码 zipball,保证下载按钮始终可用
+  const downloadUrl = row.package_path
+    ? `https://raw.githubusercontent.com/${row.repo_full_name}/${encodeURIComponent(row.repo_branch)}/${row.package_path}`
+    : buildArchiveZipUrl(row.repo_full_name, row.repo_branch);
+
   return {
     pluginId: row.plugin_id,
     name,
     author: owner?.displayName || owner?.username,
     category: row.category,
     version: row.version,
-    package: "",
-    downloadUrl: buildArchiveZipUrl(row.repo_full_name, row.repo_branch),
+    package: row.package_path ?? "",
+    downloadUrl,
     repository: row.repo_url,
     tags: row.tags.length > 0 ? row.tags : undefined,
     description: Object.keys(description).length > 0 ? description : undefined,
+    previewBeforeUrl: row.preview_before_url ?? undefined,
+    previewAfterUrl: row.preview_after_url ?? undefined,
     source: "site",
     owner: owner
       ? {

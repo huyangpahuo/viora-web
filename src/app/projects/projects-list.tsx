@@ -67,8 +67,8 @@ async function ProjectsRows({
       <div className="rounded-2xl border bg-card/70 px-6 py-14 text-center">
         <h2 className="text-base font-medium">还没有发布过插件</h2>
         <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
-          关联 GitHub 后新建项目,插件会自动在你的 GitHub
-          账号下创建公开仓库并出现在画廊中。
+          关联 GitHub 后新建项目,插件会自动登记到你 GitHub
+          账号名下的 viora-plugins 仓库并出现在画廊中。
         </p>
         <Button asChild size="sm" className="mt-5">
           <Link href="/projects/new">去发布第一个插件</Link>

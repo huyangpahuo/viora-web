@@ -1,4 +1,9 @@
-import type { ProfileRow, GithubIdentityRow, CommunityPluginRow } from "@/features/catalog/database-types";
+import type {
+  CommunityPluginRow,
+  GithubIdentityRow,
+  PluginCommentRow,
+  ProfileRow,
+} from "@/features/catalog/database-types";
 
 /**
  * 手写的最小数据库类型。
@@ -31,6 +36,17 @@ export type Database = {
         Insert: Omit<CommunityPluginRow, "id" | "created_at" | "updated_at" | "status"> &
           { id?: string; status?: CommunityPluginRow["status"] };
         Update: Partial<CommunityPluginRow>;
+        Relationships: [];
+      };
+      plugin_comments: {
+        Row: PluginCommentRow;
+        Insert: {
+          plugin_id: string;
+          user_id: string;
+          parent_id?: string | null;
+          body: string;
+        };
+        Update: Partial<Pick<PluginCommentRow, "body" | "deleted_at" | "parent_id">>;
         Relationships: [];
       };
     };

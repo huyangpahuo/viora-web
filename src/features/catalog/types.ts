@@ -31,11 +31,18 @@ export type PluginRecord = {
   version?: string;
   /**
    * registry 来源:该来源仓库内的安装包相对路径,例如 "packages/xxx.zip";
-   * site 来源:不使用(下载走 downloadUrl)
+   * site 来源:同样指向作者仓库内的安装包路径(作者上传 zip 后生效)
    */
   package: string;
-  /** site 来源:安装包直链,仅允许 github.com 域名,入库时由服务端拼接 */
+  /**
+   * site 来源:安装包直链,由服务端在入库时根据仓库与 package 路径拼接,
+   * 仅允许 github.com 与 raw.githubusercontent.com 的合法路径
+   */
   downloadUrl?: string;
+  /** site 来源:转换前效果图公开 URL(Supabase Storage) */
+  previewBeforeUrl?: string;
+  /** site 来源:转换后效果图公开 URL(Supabase Storage) */
+  previewAfterUrl?: string;
   /** 插件作者的仓库地址 */
   repository?: string;
   tags?: string[];

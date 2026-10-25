@@ -16,6 +16,7 @@ import {
   ProjectTagsInput,
   RequiredMark,
 } from "@/components/projects/project-form-fields";
+import { PreviewUploadFields } from "@/components/projects/preview-upload-fields";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -166,6 +167,12 @@ export function EditProjectForm({ plugin }: { plugin: CommunityPluginRow }) {
           <FieldError message={state.fieldErrors?.descriptionEn} />
         </div>
 
+        <PreviewUploadFields
+          existingBeforeUrl={plugin.preview_before_url}
+          existingAfterUrl={plugin.preview_after_url}
+          serverErrors={state.fieldErrors}
+        />
+
         <Button type="submit" size="lg" className="w-full" disabled={isPending}>
           {isPending ? (
             <FontAwesomeIcon
@@ -176,6 +183,9 @@ export function EditProjectForm({ plugin }: { plugin: CommunityPluginRow }) {
           ) : null}
           保存修改
         </Button>
+        <p className="text-center text-xs text-muted-foreground">
+          效果图公开可见,请确认你拥有上传图片的权利。
+        </p>
       </form>
     </div>
   );

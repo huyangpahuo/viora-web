@@ -24,7 +24,8 @@ export function GithubLinkCard({ profile }: { profile: ProfileRow | null }) {
         <h2 className="text-base font-semibold">GitHub 关联</h2>
         <p className="mt-0.5 text-sm text-muted-foreground">
           关联 GitHub 后可以一键创建插件仓库并发布插件
-          (新建项目会自动在你的 GitHub 账号下创建公开仓库,内含 plugin.json)。
+          (新建项目会自动在你的 GitHub 账号下创建 viora-plugins 公开仓库,
+          所有插件统一登记在该仓库中)。
         </p>
         <Button asChild className="mt-4">
           <a href="/api/auth/github/link">

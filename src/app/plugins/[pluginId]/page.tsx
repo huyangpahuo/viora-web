@@ -18,6 +18,8 @@ import {
   previewTint,
 } from "@/components/preview-placeholder";
 import { PreviewImage } from "@/components/preview-image";
+import { BeforeAfterSlider } from "@/components/before-after-slider";
+import { CommentSection } from "@/components/comments/comment-section";
 import { DemoModeNotice, SnapshotNotice } from "@/components/notices";
 import { PluginNoticeBar } from "./notice-bar";
 import { Badge } from "@/components/ui/badge";
@@ -96,34 +98,52 @@ export default async function PluginDetailPage({
       </Link>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
-        {/* 预览区:有真实预览时显示图片;当前目录无预览字段,默认显示分类色占位 */}
+        {/* 预览区:作者上传过转换前/后图时优先渲染对比滑块;其次单图;否则显示演示图或分类色占位 */}
         <div className="space-y-2">
-          <div
-            className="overflow-hidden rounded-2xl border bg-card"
-            style={demo ? { backgroundColor: previewTint(plugin.category) } : undefined}
-          >
-            {demo ? (
-              <PreviewImage
-                src={demo.src}
-                alt={demo.alt}
-                width={demo.width}
-                height={demo.height}
-                preload
-                fallback={
-                  <PreviewPlaceholder
-                    plugin={plugin}
-                    className="aspect-[16/10]"
-                  />
-                }
-                className="h-auto w-full object-cover"
+          {plugin.previewBeforeUrl && plugin.previewAfterUrl ? (
+            <BeforeAfterSlider
+              beforeUrl={plugin.previewBeforeUrl}
+              afterUrl={plugin.previewAfterUrl}
+              beforeAlt={`${name} 转换前效果图`}
+              afterAlt={`${name} 转换后效果图`}
+            />
+          ) : plugin.previewBeforeUrl || plugin.previewAfterUrl ? (
+            <div className="overflow-hidden rounded-2xl border bg-card">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={plugin.previewBeforeUrl ?? plugin.previewAfterUrl}
+                alt={`${name} ${plugin.previewBeforeUrl ? "转换前" : "转换后"}效果图`}
+                className="block aspect-[16/10] h-auto w-full object-cover"
               />
-            ) : (
-              <PreviewPlaceholder
-                plugin={plugin}
-                className="aspect-[16/10]"
-              />
-            )}
-          </div>
+            </div>
+          ) : (
+            <div
+              className="overflow-hidden rounded-2xl border bg-card"
+              style={demo ? { backgroundColor: previewTint(plugin.category) } : undefined}
+            >
+              {demo ? (
+                <PreviewImage
+                  src={demo.src}
+                  alt={demo.alt}
+                  width={demo.width}
+                  height={demo.height}
+                  preload
+                  fallback={
+                    <PreviewPlaceholder
+                      plugin={plugin}
+                      className="aspect-[16/10]"
+                    />
+                  }
+                  className="h-auto w-full object-cover"
+                />
+              ) : (
+                <PreviewPlaceholder
+                  plugin={plugin}
+                  className="aspect-[16/10]"
+                />
+              )}
+            </div>
+          )}
           {catalog.source === "snapshot" ? <SnapshotNotice /> : null}
           <DemoModeNotice />
         </div>
@@ -248,6 +268,14 @@ export default async function PluginDetailPage({
         </section>
       ) : null}
 
+      {/* 评论区:读取会话与数据库,包在 Suspense 内(cacheComponents 约束) */}
+      <Suspense fallback={<CommentsSkeleton />}>
+        <CommentSection
+          pluginId={plugin.pluginId}
+          loginPath={`/login?next=${encodeURIComponent(`/plugins/${encodeURIComponent(plugin.pluginId)}`)}`}
+        />
+      </Suspense>
+
       {related.length > 0 ? (
         <section className="space-y-3">
           <div className="flex items-center gap-3">
@@ -289,6 +317,18 @@ function MetaRow({
       <dt className="sr-only">{label}</dt>
       <dd className="text-foreground/90">{children}</dd>
     </div>
+  );
+}
+
+function CommentsSkeleton() {
+  return (
+    <section className="space-y-4" aria-busy="true" aria-label="评论加载中">
+      <div className="h-6 w-24 animate-pulse rounded bg-muted" />
+      <div className="space-y-3">
+        <div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
+        <div className="h-4 w-1/2 animate-pulse rounded bg-muted" />
+      </div>
+    </section>
   );
 }
 

@@ -130,15 +130,29 @@ export async function getRelatedPlugins(
 /**
  * 生成可信的安装包下载地址。
  * - registry 来源:只接受该来源仓库内 packages/*.zip 路径
- * - site 来源:使用入库时服务端拼接的直链(仅 github.com 域名)
+ * - site 来源:使用入库时服务端拼接的直链,仅接受
+ *   github.com/<owner>/<repo>/archive/... 或
+ *   raw.githubusercontent.com/<owner>/<repo>/<branch>/packages/*.zip
  * 校验失败返回 null,由 UI 隐藏下载按钮。
  */
 export function getDownloadUrl(plugin: PluginRecord): string | null {
   if (plugin.source === "site") {
-    if (!plugin.downloadUrl || !/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/archive\//.test(plugin.downloadUrl)) {
-      return null;
+    if (!plugin.downloadUrl) return null;
+    if (
+      /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/archive\/refs\/heads\/[\w.-]+\.zip$/.test(
+        plugin.downloadUrl,
+      )
+    ) {
+      return plugin.downloadUrl;
     }
-    return plugin.downloadUrl;
+    if (
+      /^https:\/\/raw\.githubusercontent\.com\/[\w.-]+\/[\w.-]+\/[\w.-]+\/packages\/[A-Za-z0-9][A-Za-z0-9._-]*\.zip$/.test(
+        plugin.downloadUrl,
+      )
+    ) {
+      return plugin.downloadUrl;
+    }
+    return null;
   }
 
   if (!PACKAGE_PATH_PATTERN.test(plugin.package)) return null;

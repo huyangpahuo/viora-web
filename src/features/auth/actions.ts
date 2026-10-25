@@ -6,6 +6,7 @@ import { fieldErrors } from "@/features/auth/schemas";
 import { getCurrentUser } from "@/features/auth/session";
 import { unlinkGithubAction as unlinkGithubActionImpl } from "@/features/projects/actions";
 import type { ActionState } from "@/lib/actions/state";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { SITE_URL } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -235,6 +236,49 @@ export async function updateProfileAction(
   }
 
   return { ok: true, message: "资料已更新。" };
+}
+
+/**
+ * 注销账号:要求用户输入自己的用户名确认。
+ *
+ * 顺序:校验用户名 → admin.deleteUser(级联删除 profiles/plugins/
+ * plugin_comments/github_identities)→ signOut → redirect("/")。
+ * redirect() 通过抛异常工作,绝不能被 try/catch 包住;
+ * GitHub 上的仓库不会被删除,由 UI 如实提示。
+ */
+export async function deleteAccountAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const supabase = await createClient();
+  if (!supabase) return { error: NOT_CONFIGURED_ERROR };
+
+  const user = await getCurrentUser();
+  if (!user) return { error: "登录状态已失效,请重新登录。" };
+
+  const confirm = formString(formData, "confirm").trim().toLowerCase();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("username")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (!profile || confirm !== profile.username) {
+    return { fieldErrors: { confirm: "请输入你的用户名以确认" } };
+  }
+
+  const admin = createAdminClient();
+  if (!admin) {
+    return { error: "站点未配置注销服务,请先完成服务端配置。" };
+  }
+
+  const { error } = await admin.auth.admin.deleteUser(user.id);
+  if (error) {
+    return { error: `注销失败:${error.message}` };
+  }
+
+  await supabase.auth.signOut();
+  redirect("/");
 }
 
 /**

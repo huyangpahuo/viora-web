@@ -38,7 +38,21 @@ export type CommunityPluginRow = {
   repo_full_name: string;
   repo_url: string;
   repo_branch: string;
+  preview_before_url: string | null;
+  preview_after_url: string | null;
+  package_path: string | null;
   status: "published" | "hidden";
+  created_at: string;
+  updated_at: string;
+};
+
+export type PluginCommentRow = {
+  id: string;
+  plugin_id: string;
+  user_id: string;
+  parent_id: string | null;
+  body: string;
+  deleted_at: string | null;
   created_at: string;
   updated_at: string;
 };
