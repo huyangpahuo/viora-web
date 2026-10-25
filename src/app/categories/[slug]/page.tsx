@@ -61,3 +61,6 @@ export default async function CategoryPage({
     </div>
   );
 }
+
+// 参数在 Suspense 之外解析以支持真正的 404 状态;本路由放弃 instant 导航,改为阻塞渲染
+export const instant = false;
