@@ -62,6 +62,7 @@ npm start           # 运行生产构建
   (含 `plugin.json` 初始化)→ 插件以 `<github登录名>.<项目标识>` 的稳定 pluginId 进入目录。
 - 我的插件:发布/隐藏、编辑元数据。
 - 目录合并:registry 来源 + 站点来源平等合并展示,站点记录变更后缓存即时失效。
+- 客户端目录 API:`GET /api/plugins`(公开)以 registry.json 兼容形状下发**可安装**的社区条目(已上传 zip;`package` 为作者仓库内安装包的绝对直链),Viora 客户端插件市场用同一解析器识别并安装。
 
 ## 代码结构
 
