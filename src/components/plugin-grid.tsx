@@ -20,7 +20,7 @@ export function PluginGrid({
   return (
     <div
       className={
-        "columns-2 gap-3 sm:columns-3 sm:gap-4 xl:columns-4 2xl:columns-5 " +
+        "columns-2 gap-3 sm:columns-3 sm:gap-4 xl:columns-4 2xl:columns-5 min-[1800px]:columns-6 " +
         (className ?? "")
       }
     >
@@ -42,7 +42,7 @@ export function PluginGridSkeleton({ count = 12 }: { count?: number }) {
   return (
     <div
       aria-hidden
-      className="columns-2 gap-3 sm:columns-3 sm:gap-4 xl:columns-4 2xl:columns-5"
+      className="columns-2 gap-3 sm:columns-3 sm:gap-4 xl:columns-4 2xl:columns-5 min-[1800px]:columns-6"
     >
       {Array.from({ length: count }, (_, i) => (
         <div

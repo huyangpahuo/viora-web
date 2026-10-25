@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 
-import { SiteHeader } from "@/components/site-header";
+import { AppShell } from "@/components/app-shell";
+import { RailUser } from "@/components/rail-user";
+import { SearchBar } from "@/components/search-bar";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -47,24 +50,29 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body
         // 同上:部分插件(如划词翻译类)会往 <body> 注入 data-* 属性
         suppressHydrationWarning
-        className="flex min-h-dvh flex-col"
+        className="bg-background text-foreground"
       >
-        <SiteHeader />
-        <main className="flex-1">{children}</main>
-        <SiteFooter />
+        <AppShell
+          searchSlot={
+            // SearchBar 读取 URL 查询参数,预渲染时先出骨架,水合后填充当前关键词
+            <Suspense
+              fallback={<div aria-hidden className="h-10 w-full rounded-full bg-muted/60" />}
+            >
+              <SearchBar />
+            </Suspense>
+          }
+          railUserSlot={
+            <Suspense
+              fallback={<div aria-hidden className="size-8 animate-pulse rounded-full bg-muted" />}
+            >
+              <RailUser />
+            </Suspense>
+          }
+        >
+          {children}
+        </AppShell>
         <Toaster position="bottom-right" />
       </body>
     </html>
-  );
-}
-
-function SiteFooter() {
-  return (
-    <footer className="border-t border-border/60 py-6">
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 text-xs text-muted-foreground sm:flex-row sm:px-6">
-        <p className="font-heading">Viora Plugins</p>
-        <p>插件安装包均托管在作者的 GitHub 仓库</p>
-      </div>
-    </footer>
   );
 }

@@ -6,7 +6,7 @@ import { getPluginCatalog } from "@/features/catalog/queries";
 
 export default function HomePage({ searchParams }: PageProps<"/">) {
   return (
-    <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6">
+    <div className="mx-auto max-w-[1600px] px-4 pb-12 sm:px-6">
       <Hero />
 
       <Suspense fallback={<PluginGridSkeleton />}>

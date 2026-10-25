@@ -62,7 +62,7 @@ export default async function UserPage({ params }: { params: Params }) {
   const displayName = profile.display_name || profile.username;
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6">
+    <div className="mx-auto max-w-[1600px] space-y-6 px-4 py-8 sm:px-6">
       <header className="flex flex-col gap-4 rounded-2xl border bg-card p-6 sm:flex-row sm:items-center sm:gap-5">
         {profile.avatar_url || profile.github_avatar_url ? (
           // 头像来自用户自填或 GitHub,域名不可枚举,使用原生 img

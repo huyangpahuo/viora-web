@@ -37,9 +37,9 @@ export async function GalleryResults({
   return (
     <div className="space-y-4">
       {catalog.source === "snapshot" ? (
-        <SnapshotNotice className="mx-auto max-w-7xl" />
+        <SnapshotNotice className="mx-auto max-w-[1600px]" />
       ) : null}
-      <DemoModeNotice className="mx-auto max-w-7xl" />
+      <DemoModeNotice className="mx-auto max-w-[1600px]" />
       <CategoryChips categories={categories} activeSlug={fixedCategorySlug} />
 
       {q || tag ? (

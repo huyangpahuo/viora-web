@@ -39,7 +39,7 @@ export default async function CategoryPage({
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5 px-4 py-6 sm:px-6">
+    <div className="mx-auto max-w-[1600px] space-y-5 px-4 py-6 sm:px-6">
       <Suspense fallback={<PluginGridSkeleton />}>
         <div className="space-y-5">
           <section className="space-y-1 pb-2 pt-10 sm:pt-14">

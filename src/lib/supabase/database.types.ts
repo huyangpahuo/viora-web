@@ -4,6 +4,10 @@ import type {
   PluginCommentRow,
   ProfileRow,
 } from "@/features/catalog/database-types";
+import type {
+  CommunityReplyRow,
+  CommunityThreadRow,
+} from "@/features/community/database-types";
 
 /**
  * 手写的最小数据库类型。
@@ -47,6 +51,26 @@ export type Database = {
           body: string;
         };
         Update: Partial<Pick<PluginCommentRow, "body" | "deleted_at" | "parent_id">>;
+        Relationships: [];
+      };
+      community_threads: {
+        Row: CommunityThreadRow;
+        Insert: {
+          author_id: string;
+          title: string;
+          body: string;
+        };
+        Update: Partial<Pick<CommunityThreadRow, "title" | "body" | "deleted_at">>;
+        Relationships: [];
+      };
+      community_replies: {
+        Row: CommunityReplyRow;
+        Insert: {
+          thread_id: string;
+          author_id: string;
+          body: string;
+        };
+        Update: Partial<Pick<CommunityReplyRow, "body" | "deleted_at">>;
         Relationships: [];
       };
     };
