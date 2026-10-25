@@ -8,6 +8,11 @@ import type {
   CommunityReplyRow,
   CommunityThreadRow,
 } from "@/features/community/database-types";
+import type {
+  PluginFavoriteRow,
+  PluginLikeRow,
+  UserFollowRow,
+} from "@/features/social/database-types";
 
 /**
  * 手写的最小数据库类型。
@@ -71,6 +76,24 @@ export type Database = {
           body: string;
         };
         Update: Partial<Pick<CommunityReplyRow, "body" | "deleted_at">>;
+        Relationships: [];
+      };
+      plugin_likes: {
+        Row: PluginLikeRow;
+        Insert: { user_id: string; plugin_id: string };
+        Update: Partial<Pick<PluginLikeRow, "plugin_id">>;
+        Relationships: [];
+      };
+      plugin_favorites: {
+        Row: PluginFavoriteRow;
+        Insert: { user_id: string; plugin_id: string };
+        Update: Partial<Pick<PluginFavoriteRow, "plugin_id">>;
+        Relationships: [];
+      };
+      user_follows: {
+        Row: UserFollowRow;
+        Insert: { follower_id: string; followed_id: string };
+        Update: Partial<Pick<UserFollowRow, "followed_id">>;
         Relationships: [];
       };
     };

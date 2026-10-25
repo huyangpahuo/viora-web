@@ -15,6 +15,12 @@ export type ActionState = {
   /** 附带信息(如已提交的邮箱、成功提示文案) */
   email?: string;
   message?: string;
+  /** 点赞/取消点赞后的最新状态(社交 action 返回) */
+  liked?: boolean;
+  /** 收藏/取消收藏后的最新状态 */
+  favorited?: boolean;
+  /** 关注/取关后的最新状态 */
+  following?: boolean;
 };
 
 export const initialActionState: ActionState = {};

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -5,15 +6,28 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/features/auth/session";
 import type {
   CommunityPluginRow,
   ProfileRow,
 } from "@/features/catalog/database-types";
+import {
+  getPluginCatalog,
+} from "@/features/catalog/queries";
+import type { PluginRecord } from "@/features/catalog/types";
+import {
+  getFavoritePlugins,
+  getUserFollowStats,
+  type FavoriteEntry,
+} from "@/features/social/queries";
 import { buildArchiveZipUrl } from "@/lib/github/repos";
+import { FollowButton } from "@/components/social/follow-button";
 import { PluginGrid } from "@/components/plugin-grid";
 import { EmptyState } from "@/components/empty-state";
+import { cn } from "@/lib/utils";
 
 type Params = Promise<{ username: string }>;
+type UserPageSearchParams = Promise<{ tab?: string | string[] }>;
 
 async function decodeUsername(params: Params): Promise<string> {
   const { username } = await params;
@@ -22,6 +36,12 @@ async function decodeUsername(params: Params): Promise<string> {
   } catch {
     return username;
   }
+}
+
+function firstParam(value: string | string[] | undefined): string | undefined {
+  const raw = Array.isArray(value) ? value[0] : value;
+  const trimmed = raw?.trim();
+  return trimmed ? trimmed : undefined;
 }
 
 export async function generateMetadata({
@@ -47,19 +67,41 @@ async function fetchProfile(username: string): Promise<ProfileRow | null> {
 }
 
 /**
- * 公开作者主页:展示作者的资料与其发布的全部插件(仅 published)。
+ * 公开作者主页:作者资料、真实统计(插件/粉丝/关注)、关注按钮,
+ * 以及"插件 / 收藏"两个 Tab(Tab 状态走 URL 参数 ?tab=favorites)。
  * 与首页画廊共用 PluginGrid,平等展示所有作者的插件。
  */
-export default async function UserPage({ params }: { params: Params }) {
+export default async function UserPage({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: UserPageSearchParams;
+}) {
   const username = await decodeUsername(params);
-  const profile = await fetchProfile(username);
+  const [profile, rawTab] = await Promise.all([
+    fetchProfile(username),
+    searchParams,
+  ]);
 
   if (!profile) {
     notFound();
   }
 
+  // "收藏" Tab 展示该作者收藏的插件;默认展示其发布的插件
+  const tab = firstParam(rawTab?.tab) === "favorites" ? "favorites" : "plugins";
+
   const plugins = await fetchPublishedPlugins(profile);
+  const [followStats, favoritePlugins] = await Promise.all([
+    getUserFollowStats(profile.username),
+    tab === "favorites"
+      ? resolveFavoritePlugins(await getFavoritePlugins(profile.id))
+      : Promise.resolve([] as PluginRecord[]),
+  ]);
+
   const displayName = profile.display_name || profile.username;
+  const profilePath = `/users/${encodeURIComponent(profile.username)}`;
+  const loginPath = `/login?next=${encodeURIComponent(profilePath)}`;
 
   return (
     <div className="mx-auto max-w-[1600px] space-y-6 px-4 py-8 sm:px-6">
@@ -85,6 +127,19 @@ export default async function UserPage({ params }: { params: Params }) {
           <p className="font-mono text-sm text-muted-foreground">
             @{profile.username}
           </p>
+          <p className="text-sm text-muted-foreground">
+            <span className="tabular-nums">{plugins.length}</span> 个插件
+            <span aria-hidden className="mx-1.5">
+              ·
+            </span>
+            <span className="tabular-nums">{followStats?.followers ?? 0}</span>{" "}
+            粉丝
+            <span aria-hidden className="mx-1.5">
+              ·
+            </span>
+            <span className="tabular-nums">{followStats?.following ?? 0}</span>{" "}
+            关注
+          </p>
           {profile.bio ? (
             <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
               {profile.bio}
@@ -92,20 +147,46 @@ export default async function UserPage({ params }: { params: Params }) {
           ) : null}
         </div>
 
-        {profile.github_login ? (
-          <a
-            href={`https://github.com/${encodeURIComponent(profile.github_login)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-sm text-muted-foreground transition-colors outline-none hover:border-foreground/25 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-          >
-            <FontAwesomeIcon icon={faGithub} className="size-4" aria-hidden />
-            @{profile.github_login}
-          </a>
-        ) : null}
+        <div className="flex shrink-0 items-center gap-2">
+          {/* 关注按钮:读取会话,独立 Suspense 流式输出(本人不显示) */}
+          <Suspense fallback={null}>
+            <UserFollowArea
+              username={profile.username}
+              loginPath={loginPath}
+              nextPath={profilePath}
+            />
+          </Suspense>
+          {profile.github_login ? (
+            <a
+              href={`https://github.com/${encodeURIComponent(profile.github_login)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm text-muted-foreground transition-colors outline-none hover:border-foreground/25 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+            >
+              <FontAwesomeIcon icon={faGithub} className="size-4" aria-hidden />
+              @{profile.github_login}
+            </a>
+          ) : null}
+        </div>
       </header>
 
-      {plugins.length > 0 ? (
+      {/* 主页 Tab:插件(默认)/ 收藏;样式与首页信息流 Tab 一致 */}
+      <nav aria-label="主页内容切换" className="flex gap-2">
+        <UserTabLink href={profilePath} active={tab === "plugins"}>
+          插件
+        </UserTabLink>
+        <UserTabLink href={`${profilePath}?tab=favorites`} active={tab === "favorites"}>
+          收藏
+        </UserTabLink>
+      </nav>
+
+      {tab === "favorites" ? (
+        favoritePlugins.length > 0 ? (
+          <PluginGrid plugins={favoritePlugins} />
+        ) : (
+          <FavoritesEmptyState />
+        )
+      ) : plugins.length > 0 ? (
         <PluginGrid plugins={plugins} />
       ) : (
         <EmptyState hasFilters={false} />
@@ -118,6 +199,81 @@ export default async function UserPage({ params }: { params: Params }) {
         >
           返回画廊首页
         </Link>
+      </p>
+    </div>
+  );
+}
+
+/** 关注按钮区域:读取会话;本人不显示,未登录给登录入口 */
+async function UserFollowArea({
+  username,
+  loginPath,
+  nextPath,
+}: {
+  username: string;
+  loginPath: string;
+  nextPath: string;
+}) {
+  const user = await getCurrentUser();
+  if (!user) {
+    return (
+      <FollowButton
+        username={username}
+        following={false}
+        loggedIn={false}
+        loginPath={loginPath}
+        nextPath={nextPath}
+      />
+    );
+  }
+
+  const stats = await getUserFollowStats(username, user.id);
+  if (!stats || stats.isSelf) return null;
+
+  return (
+    <FollowButton
+      username={username}
+      following={stats.isFollowing}
+      loggedIn
+      loginPath={loginPath}
+      nextPath={nextPath}
+    />
+  );
+}
+
+function UserTabLink({
+  href,
+  active,
+  children,
+}: {
+  href: string;
+  active: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "inline-flex min-h-10 shrink-0 items-center rounded-full border px-4 text-sm font-medium whitespace-nowrap transition-colors outline-none",
+        "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
+        active
+          ? "border-transparent bg-foreground text-background"
+          : "border-border text-muted-foreground hover:border-foreground/25 hover:text-foreground",
+      )}
+    >
+      {children}
+    </Link>
+  );
+}
+
+/** 收藏 Tab 的空状态 */
+function FavoritesEmptyState() {
+  return (
+    <div className="flex flex-col items-center justify-center gap-2 py-24 text-center">
+      <h2 className="text-base font-medium">还没有收藏</h2>
+      <p className="max-w-sm text-sm text-muted-foreground">
+        在插件详情页点击收藏,喜欢的作品会出现在这里。
       </p>
     </div>
   );
@@ -168,6 +324,23 @@ async function fetchPublishedPlugins(profile: ProfileRow) {
         },
       };
     });
+}
+
+/**
+ * 把收藏记录解析为目录中的插件:按收藏时间倒序,用目录 pluginId 匹配。
+ * 已下架/未发布的插件不在目录里,自然不出现,不虚构数据。
+ */
+async function resolveFavoritePlugins(
+  entries: FavoriteEntry[],
+): Promise<PluginRecord[]> {
+  if (entries.length === 0) return [];
+
+  const catalog = await getPluginCatalog();
+  const byId = new Map(catalog.plugins.map((p) => [p.pluginId, p]));
+
+  return entries
+    .map((entry) => byId.get(entry.pluginId))
+    .filter((plugin): plugin is PluginRecord => plugin !== undefined);
 }
 
 function displayNameOf(profile: ProfileRow): string {

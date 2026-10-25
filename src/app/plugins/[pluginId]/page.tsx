@@ -22,6 +22,11 @@ import { BeforeAfterSlider } from "@/components/before-after-slider";
 import { CommentSection } from "@/components/comments/comment-section";
 import { DemoModeNotice, SnapshotNotice } from "@/components/notices";
 import { PluginNoticeBar } from "./notice-bar";
+import {
+  PluginFollowArea,
+  PluginLikeFavoritePanel,
+  SocialActionsSkeleton,
+} from "@/components/social/plugin-social-panels";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -81,6 +86,9 @@ export default async function PluginDetailPage({
     plugin.name.en && plugin.name.zh && plugin.name.en !== plugin.name.zh
       ? plugin.name.en
       : null;
+  // 登录入口与回跳地址:点赞/收藏/关注未登录时都引导到这里
+  const nextPath = `/plugins/${encodeURIComponent(plugin.pluginId)}`;
+  const loginPath = `/login?next=${encodeURIComponent(nextPath)}`;
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-4 py-6 sm:px-6">
@@ -189,6 +197,14 @@ export default async function PluginDetailPage({
                   )}
                   {plugin.owner.displayName ?? plugin.owner.username}
                 </Link>
+                {/* 关注入口:读取会话,独立 Suspense 流式输出 */}
+                <Suspense fallback={null}>
+                  <PluginFollowArea
+                    plugin={plugin}
+                    loginPath={loginPath}
+                    nextPath={nextPath}
+                  />
+                </Suspense>
               </MetaRow>
             ) : plugin.author ? (
               <MetaRow icon={<FontAwesomeIcon icon={faUser} className="size-4" aria-hidden />} label="作者">
@@ -230,6 +246,14 @@ export default async function PluginDetailPage({
           ) : null}
 
           <div className="flex flex-col gap-2">
+            {/* 互动区:点赞/收藏(读取会话,包在 Suspense 内) */}
+            <Suspense fallback={<SocialActionsSkeleton />}>
+              <PluginLikeFavoritePanel
+                pluginId={plugin.pluginId}
+                loginPath={loginPath}
+                nextPath={nextPath}
+              />
+            </Suspense>
             {packageUrl ? (
               <Button asChild size="lg" className="w-full">
                 <a href={packageUrl} download>
@@ -276,7 +300,7 @@ export default async function PluginDetailPage({
       <Suspense fallback={<CommentsSkeleton />}>
         <CommentSection
           pluginId={plugin.pluginId}
-          loginPath={`/login?next=${encodeURIComponent(`/plugins/${encodeURIComponent(plugin.pluginId)}`)}`}
+          loginPath={loginPath}
         />
       </Suspense>
 
@@ -313,15 +337,17 @@ function MetaRow({
   label: string;
   children: React.ReactNode;
 }) {
-  return (
-    <div className="flex items-center gap-2">
-      <span className="text-muted-foreground" aria-hidden>
-        {icon}
-      </span>
-      <dt className="sr-only">{label}</dt>
-      <dd className="text-foreground/90">{children}</dd>
-    </div>
-  );
+    return (
+      <div className="flex items-center gap-2">
+        <span className="text-muted-foreground" aria-hidden>
+          {icon}
+        </span>
+        <dt className="sr-only">{label}</dt>
+        <dd className="flex min-w-0 flex-wrap items-center gap-2 text-foreground/90">
+          {children}
+        </dd>
+      </div>
+    );
 }
 
 function CommentsSkeleton() {
