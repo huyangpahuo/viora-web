@@ -56,17 +56,19 @@ function useIsActive() {
   };
 }
 
-export function AppShell({
-  children,
-  searchSlot,
-  railUserSlot,
-}: {
+export type AppShellProps = {
   children: React.ReactNode;
   /** 顶部搜索条(SearchBar 含 Suspense,由服务端渲染后传入) */
   searchSlot: React.ReactNode;
   /** 侧栏底部的用户区(头像菜单/登录入口,服务端渲染后传入) */
   railUserSlot: React.ReactNode;
-}) {
+};
+
+/**
+ * 全局外壳。usePathname 在静态路由的预渲染期可直接解析(路径构建期已知);
+ * 动态参数路由(/projects/[id]/edit)需声明 instant = false 走阻塞渲染。
+ */
+export function AppShell({ children, searchSlot, railUserSlot }: AppShellProps) {
   const pathname = usePathname() ?? "/";
   const isActive = useIsActive();
 
