@@ -118,8 +118,12 @@ export default async function PluginDetailPage({
             </div>
           ) : (
             <div
-              className="overflow-hidden rounded-2xl border bg-card"
-              style={demo ? { backgroundColor: previewTint(plugin.category) } : undefined}
+              className="overflow-hidden rounded-2xl border bg-card [background-color:var(--preview-tint)]"
+              style={
+                demo
+                  ? ({ "--preview-tint": previewTint(plugin.category) } as React.CSSProperties)
+                  : undefined
+              }
             >
               {demo ? (
                 <PreviewImage

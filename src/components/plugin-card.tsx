@@ -40,13 +40,15 @@ export function PluginCard({
       )}
     >
       <div
-        className="relative w-full overflow-hidden"
+        className="relative w-full overflow-hidden [background-color:var(--preview-tint)]"
         style={
           demo
             ? {
                 aspectRatio: `${demo.width} / ${demo.height}`,
-                backgroundColor: previewTint(plugin.category),
-              }
+                // 颜色经 CSS 变量消费:内联 background-color 会成为
+                // Dark Reader 等插件的注入点,导致 hydration 误报
+                "--preview-tint": previewTint(plugin.category),
+              } as React.CSSProperties
             : undefined
         }
       >

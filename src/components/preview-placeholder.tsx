@@ -73,10 +73,12 @@ export function PreviewPlaceholder({
       role="img"
       aria-label={`${plugin.name.zh ?? plugin.name.en ?? plugin.pluginId}(暂无预览图)`}
       className={cn(
-        "preview-grain relative flex w-full items-center justify-center",
+        "preview-grain relative flex w-full items-center justify-center [background-color:var(--preview-tint)]",
         className,
       )}
-      style={{ backgroundColor: `oklch(0.21 0.032 ${hue})` }}
+      style={
+        { "--preview-tint": `oklch(0.21 0.032 ${hue})` } as React.CSSProperties
+      }
     >
       <div className="flex flex-col items-center gap-2 text-white/60">
         <FontAwesomeIcon icon={faShapes} className="size-7" aria-hidden />
