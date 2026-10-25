@@ -71,3 +71,41 @@ export async function uploadPreviewToRepo(options: {
   const encodedPath = path.split("/").map(encodeURIComponent).join("/");
   return `https://raw.githubusercontent.com/${options.hubFullName}/${encodeURIComponent(options.branch)}/${encodedPath}`;
 }
+
+/** 从预览图 URL 解析仓库内相对路径;不属于该仓库或非 raw 链接返回 null */
+export function previewRepoPathFromUrl(
+  url: string,
+  repoFullName: string,
+): string | null {
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname !== "raw.githubusercontent.com") return null;
+    const segments = parsed.pathname.split("/").filter(Boolean);
+    // raw 链接形如 /<owner>/<repo>/<branch>/<path...>
+    if (segments.length < 4) return null;
+    const [owner, repo, , ...pathSegments] = segments;
+    if (`${owner}/${repo}`.toLowerCase() !== repoFullName.toLowerCase()) {
+      return null;
+    }
+    return pathSegments.map(decodeURIComponent).join("/");
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * 旧版 Supabase Storage 的预览图 URL → 桶内相对路径。
+ * 改造前上传的图片仍存于 plugin-previews 桶,删除项目时也应清理。
+ */
+export function legacyStoragePathFromUrl(
+  url: string,
+  supabaseUrl: string,
+): string | null {
+  try {
+    const base = `${supabaseUrl.replace(/\/$/, "")}/storage/v1/object/public/plugin-previews/`;
+    if (!url.startsWith(base)) return null;
+    return url.slice(base.length);
+  } catch {
+    return null;
+  }
+}

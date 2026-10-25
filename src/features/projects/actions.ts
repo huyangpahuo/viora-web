@@ -9,7 +9,12 @@ import { createProjectSchema, updateProjectSchema } from "@/features/projects/sc
 import type { ActionState } from "@/lib/actions/state";
 import { decryptToken } from "@/lib/crypto/token-crypto";
 import { uploadPackageToRepo, validatePackageFile } from "@/lib/github/package";
-import { uploadPreviewToRepo, validatePreviewFile } from "@/lib/github/previews";
+import {
+  legacyStoragePathFromUrl,
+  previewRepoPathFromUrl,
+  uploadPreviewToRepo,
+  validatePreviewFile,
+} from "@/lib/github/previews";
 import {
   AUTHOR_REPO_SUFFIX,
   commitTextFile,
@@ -17,9 +22,10 @@ import {
   deleteFile,
   getJsonFile,
   getRepo,
+  listDirectory,
 } from "@/lib/github/repos";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { SITE_URL } from "@/lib/supabase/config";
+import { SITE_URL, SUPABASE_URL } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 import type { CommunityPluginRow } from "@/features/catalog/database-types";
 
@@ -640,6 +646,24 @@ export async function updateProjectAction(
     }
   }
 
+  // 新文件上传成功后需要清理被替换的旧文件(仓库内或旧版图床),
+  // 避免时间戳命名的旧预览图在仓库里越积越多
+  const replacedGithubPaths: string[] = [];
+  const replacedLegacyPaths: string[] = [];
+  for (const [newUrl, oldUrl] of [
+    [newBeforeUrl, row.preview_before_url],
+    [newAfterUrl, row.preview_after_url],
+  ] as const) {
+    if (!newUrl || !oldUrl || oldUrl === newUrl) continue;
+    const githubPath = previewRepoPathFromUrl(oldUrl, row.repo_full_name);
+    if (githubPath) {
+      replacedGithubPaths.push(githubPath);
+      continue;
+    }
+    const legacyPath = legacyStoragePathFromUrl(oldUrl, SUPABASE_URL);
+    if (legacyPath) replacedLegacyPaths.push(legacyPath);
+  }
+
   const updates: Partial<CommunityPluginRow> = {
     name_zh: input.nameZh,
     name_en: input.nameEn || null,
@@ -671,6 +695,29 @@ export async function updateProjectAction(
   // repo_full_name 直接取自该行,旧的 per-plugin 仓库同样走 plugins/ 路径,
   // 缺仓库信息时静默跳过,任何失败都不阻断保存结果
   let syncNotice: string | null = null;
+  // 清理被替换的旧文件:尽力而为,失败拼进提示,不影响保存结果
+  if (replacedGithubPaths.length > 0 && githubToken && row.repo_full_name && row.repo_branch) {
+    const replacedNotices: string[] = [];
+    for (const path of replacedGithubPaths) {
+      const removed = await deleteFile({
+        token: githubToken,
+        fullName: row.repo_full_name,
+        branch: row.repo_branch,
+        path,
+      });
+      if (!removed.ok) replacedNotices.push(removed.message);
+    }
+    if (replacedNotices.length > 0) {
+      syncNotice = `旧文件清理失败:${replacedNotices.join(";")}`;
+    }
+  }
+  if (replacedLegacyPaths.length > 0) {
+    const admin = createAdminClient();
+    if (admin) {
+      await admin.storage.from("plugin-previews").remove(replacedLegacyPaths);
+    }
+  }
+
   if (row.repo_full_name && row.repo_branch) {
     if (!githubToken) {
       const tokenResult = await getDecryptedGithubToken(user.id);
@@ -818,6 +865,47 @@ export async function deleteProjectAction(
             if (!committed.ok) {
               notices.push(`registry.json 清理失败:${committed.message}`);
             }
+          }
+        }
+      }
+
+      // 移除预览图目录(previews/<pluginId>/ 下的所有文件)
+      const previewDir = `previews/${row.plugin_id}`;
+      const previewDirResult = await listDirectory({
+        token,
+        fullName: row.repo_full_name,
+        branch: row.repo_branch,
+        path: previewDir,
+      });
+      if (!previewDirResult.ok) {
+        notices.push(`${previewDir} 清理失败:${previewDirResult.message}`);
+      } else {
+        for (const file of previewDirResult.files) {
+          const removedPreview = await deleteFile({
+            token,
+            fullName: row.repo_full_name,
+            branch: row.repo_branch,
+            path: file.path,
+          });
+          if (!removedPreview.ok) {
+            notices.push(`${file.path} 清理失败:${removedPreview.message}`);
+          }
+        }
+      }
+
+      // 改造前的预览图存于 Supabase Storage,同样尽力清理(经 service role)
+      const legacyPaths = [row.preview_before_url, row.preview_after_url]
+        .filter((url): url is string => typeof url === "string")
+        .map((url) => legacyStoragePathFromUrl(url, SUPABASE_URL))
+        .filter((path): path is string => path !== null);
+      if (legacyPaths.length > 0) {
+        const admin = createAdminClient();
+        if (admin) {
+          const { error: removeError } = await admin.storage
+            .from("plugin-previews")
+            .remove(legacyPaths);
+          if (removeError) {
+            notices.push(`旧版图床遗留文件清理失败:${removeError.message}`);
           }
         }
       }

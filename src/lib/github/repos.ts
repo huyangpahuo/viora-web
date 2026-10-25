@@ -367,6 +367,59 @@ export async function getFileSha(options: {
   }
 }
 
+export type ListDirectoryResult =
+  | { ok: true; files: { path: string; sha: string }[] }
+  | { ok: false; message: string };
+
+/**
+ * 列出仓库内某个目录下的文件(不递归子目录)。
+ * 目录不存在视为空目录(返回空数组),用于"删掉整个目录内容"的场景。
+ */
+export async function listDirectory(options: {
+  token: string;
+  fullName: string;
+  branch: string;
+  path: string;
+}): Promise<ListDirectoryResult> {
+  const prefix = `目录 ${options.path} 读取失败`;
+  try {
+    const response = await fetch(
+      `${API_BASE}/repos/${options.fullName}/contents/${encodeContentsPath(options.path)}?ref=${encodeURIComponent(options.branch)}`,
+      { headers: apiHeaders(options.token) },
+    );
+    if (response.status === 404) return { ok: true, files: [] };
+    if (!response.ok) {
+      const body = await response.text();
+      const mapped = mapContentsError(prefix, response.status, body);
+      return mapped.ok === false ? mapped : { ok: true, files: [] };
+    }
+    const payload = (await response.json()) as Array<{
+      path?: string;
+      sha?: string;
+      type?: string;
+    }>;
+    if (!Array.isArray(payload)) {
+      return { ok: false, message: `${prefix}:返回内容不完整` };
+    }
+    return {
+      ok: true,
+      files: payload
+        .filter(
+          (entry): entry is { path: string; sha: string; type: string } =>
+            entry.type === "file" &&
+            typeof entry.path === "string" &&
+            typeof entry.sha === "string",
+        )
+        .map((entry) => ({ path: entry.path, sha: entry.sha })),
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: `${prefix}:${error instanceof Error ? error.message : "网络错误"}`,
+    };
+  }
+}
+
 export type DeleteFileResult =
   | { ok: true }
   | { ok: false; message: string };
