@@ -1,5 +1,6 @@
 import "server-only";
 
+import { connection } from "next/server";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
@@ -22,6 +23,11 @@ export type SessionUser = {
 
 export async function getCurrentUser(): Promise<SessionUser | null> {
   if (!isSupabaseConfigured) return null;
+
+  // 会话必须逐请求读取。connection() 声明此函数为纯动态:
+  // 1) 跳过预渲染通道,避免 supabase-js 内部的 Date.now() 被判定为不稳定值;
+  // 2) 保证头部等共享布局的用户状态始终是当次请求的最新会话。
+  await connection();
 
   const supabase = await createClient();
   if (!supabase) return null;
