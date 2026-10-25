@@ -4,13 +4,13 @@ import {
   getPluginCatalog,
   searchPlugins,
 } from "@/features/catalog/queries";
-import { DEMO_PREVIEWS_ENABLED } from "@/features/catalog/demo";
 import type { PluginRecord } from "@/features/catalog/types";
 import { getFollowedAuthors, getPluginSocialCounts } from "@/features/social/queries";
 import { CategoryChips } from "@/components/category-chips";
 import { FeedTabs, type FeedTab } from "@/components/feed-tabs";
-import { EmptyState, NoPreviewNotice } from "@/components/empty-state";
+import { EmptyState } from "@/components/empty-state";
 import { PluginGrid } from "@/components/plugin-grid";
+import { AuthorCardGrid, type AuthorCardEntry } from "@/components/author-card";
 import { DemoModeNotice, SnapshotNotice } from "@/components/notices";
 
 export type CatalogSearchParams = {
@@ -53,8 +53,12 @@ export async function GalleryResults({
     getPluginCatalog(),
   ]);
 
+  // 搜索模式(q/tag)展示全量普通卡片,便于定位具体插件;
+  // 浏览模式(首页三个 Tab 与分类页)按作者去重,呈现作者卡
+  const isSearchMode = Boolean(q || tag);
+
   let feedPlugins = plugins;
-  if (showFeedTabs) {
+  if (!isSearchMode) {
     if (tab === "recommended") {
       // 热度来自真实点赞/收藏计数(带缓存,交互后由 action 失效)
       const counts = await getPluginSocialCounts(
@@ -108,12 +112,19 @@ export async function GalleryResults({
       ) : null}
 
       {feedPlugins.length > 0 ? (
-        <>
+        isSearchMode ? (
           <PluginGrid plugins={feedPlugins} />
-          {!DEMO_PREVIEWS_ENABLED ? (
-            <NoPreviewNotice className="pt-2 text-center" />
-          ) : null}
-        </>
+        ) : (
+          <AuthorCardGrid
+            entries={buildAuthorEntries(
+              plugins,
+              feedPlugins,
+              tab === "recommended"
+                ? await getPluginSocialCounts(plugins.map((p) => p.pluginId))
+                : undefined,
+            )}
+          />
+        )
       ) : tab === "following" && showFeedTabs ? (
         <FollowFeedEmptyState />
       ) : (
@@ -121,6 +132,64 @@ export async function GalleryResults({
       )}
     </div>
   );
+}
+
+/**
+ * 由去重后的信息流构建作者卡条目:
+ * - pluginCount 为该作者在当前过滤范围(全站/分类/关注流)内的插件总数;
+ * - 推荐 Tab 的作者热度 = 其全部插件的点赞+收藏之和(真实计数)。
+ */
+function buildAuthorEntries(
+  allPlugins: PluginRecord[],
+  feedPlugins: PluginRecord[],
+  counts?: Record<string, { likes: number; favorites: number }>,
+): AuthorCardEntry[] {
+  const heatOf = (plugin: PluginRecord) =>
+    counts
+      ? (counts[plugin.pluginId]?.likes ?? 0) +
+        (counts[plugin.pluginId]?.favorites ?? 0)
+      : 0;
+
+  const groups = new Map<
+    string,
+    { entry: AuthorCardEntry; latestHeat: number }
+  >();
+
+  for (const plugin of allPlugins) {
+    const key = authorKeyOf(plugin);
+    const group = groups.get(key);
+    if (group) {
+      group.entry.pluginCount += 1;
+      if (counts) group.latestHeat += heatOf(plugin);
+      continue;
+    }
+    const isSite = plugin.source === "site";
+    groups.set(key, {
+      latestHeat: counts ? heatOf(plugin) : 0,
+      entry: {
+        key,
+        authorName:
+          (isSite
+            ? plugin.owner?.displayName || plugin.owner?.username
+            : plugin.author) ??
+          plugin.author ??
+          "未知作者",
+        avatarUrl: isSite ? (plugin.owner?.avatarUrl ?? null) : null,
+        username: isSite ? (plugin.owner?.username ?? null) : null,
+        latest: plugin,
+        pluginCount: 1,
+      },
+    });
+  }
+
+  const entries = [...groups.values()].map((g) => g.entry);
+
+  // 推荐模式:feedPlugins 已按热度排好,保持其顺序即可
+  const order = new Map(feedPlugins.map((plugin, index) => [authorKeyOf(plugin), index]));
+  entries.sort(
+    (a, b) => (order.get(a.key) ?? Number.MAX_SAFE_INTEGER) - (order.get(b.key) ?? Number.MAX_SAFE_INTEGER),
+  );
+  return entries;
 }
 
 function firstParam(value: string | string[] | undefined): string | undefined {
