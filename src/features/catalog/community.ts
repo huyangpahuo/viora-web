@@ -1,6 +1,6 @@
 import { cacheLife, cacheTag } from "next/cache";
 
-import { createClient } from "@/lib/supabase/server";
+import { createAnonClient } from "@/lib/supabase/anon";
 import { buildArchiveZipUrl } from "@/lib/github/repos";
 import type { PluginOwnerInfo } from "./database-types";
 import type { PluginRecord } from "./types";
@@ -21,7 +21,8 @@ export async function getSitePlugins(): Promise<PluginRecord[]> {
   cacheTag("site-plugins");
   cacheLife({ stale: 30, revalidate: 60, expire: 60 * 60 });
 
-  const supabase = await createClient();
+  // 缓存函数内禁止读 cookies(),公开数据用匿名客户端,RLS 保证只读已发布行
+  const supabase = createAnonClient();
   if (!supabase) return [];
 
   const { data, error } = await supabase
