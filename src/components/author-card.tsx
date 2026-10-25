@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { getDemoPreview } from "@/features/catalog/demo";
+import { getCardPreview } from "@/features/catalog/demo";
 import { makeCategoryInfo } from "@/features/catalog/categories";
 import type { PluginRecord } from "@/features/catalog/types";
 import {
@@ -63,7 +63,7 @@ export function AuthorCard({
   entry: AuthorCardEntry;
   className?: string;
 }) {
-  const demo = getDemoPreview(entry.latest);
+  const preview = getCardPreview(entry.latest);
   const name = entry.latest.name.zh ?? entry.latest.name.en ?? entry.latest.pluginId;
   const authorLink = entry.username ? `/users/${entry.username}` : null;
 
@@ -79,18 +79,18 @@ export function AuthorCard({
         href={`/plugins/${encodeURIComponent(entry.latest.pluginId)}`}
         className="relative block w-full overflow-hidden outline-none focus-visible:ring-3 focus-visible:ring-inset focus-visible:ring-ring/50 [background-color:var(--preview-tint)]"
         style={
-          demo
+          preview.kind === "image"
             ? {
-                aspectRatio: `${demo.width} / ${demo.height}`,
+                aspectRatio: `${preview.width} / ${preview.height}`,
                 "--preview-tint": previewTint(entry.latest.category),
               } as React.CSSProperties
             : undefined
         }
       >
-        {demo ? (
+        {preview.kind === "image" ? (
           <PreviewImage
-            src={demo.src}
-            alt={`${name}(演示占位图,非插件真实效果)`}
+            src={preview.src}
+            alt={preview.alt}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 25vw, 20vw"
             className="object-cover transition-transform duration-200 group-hover:scale-[1.02]"

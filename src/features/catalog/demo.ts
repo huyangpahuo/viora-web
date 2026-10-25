@@ -32,6 +32,35 @@ function hashString(input: string): number {
   return hash;
 }
 
+export type CardPreview =
+  | { kind: "image"; src: string; width: number; height: number; alt: string; isReal: boolean }
+  | { kind: "placeholder" };
+
+/**
+ * 卡片预览解析:作者上传过的"转换后"效果图优先(real = true),
+ * 其次演示模式测试图(real = false,页面会出警示横幅),
+ * 两者皆无时回退占位展签。详情页主视觉另有滑块逻辑,不经过这里。
+ */
+export function getCardPreview(plugin: PluginRecord): CardPreview {
+  const real = plugin.previewAfterUrl ?? plugin.previewBeforeUrl;
+  if (real) {
+    const name = plugin.name.zh ?? plugin.name.en ?? plugin.pluginId;
+    return {
+      kind: "image",
+      src: real,
+      width: 1200,
+      height: 750,
+      alt: `${name} 效果图(作者上传)`,
+      isReal: true,
+    };
+  }
+  const demo = getDemoPreview(plugin);
+  if (demo) {
+    return { kind: "image", ...demo, isReal: false };
+  }
+  return { kind: "placeholder" };
+}
+
 export type DemoPreview = {
   src: string;
   width: number;
