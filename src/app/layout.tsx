@@ -33,7 +33,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
     >
-      <body className="flex min-h-dvh flex-col">
+      <body
+        // 同上:部分插件(如划词翻译类)会往 <body> 注入 data-* 属性
+        suppressHydrationWarning
+        className="flex min-h-dvh flex-col"
+      >
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <SiteFooter />
