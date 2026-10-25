@@ -36,8 +36,9 @@ export function SiteHeader({ className }: { className?: string }) {
       <div className="mx-auto flex h-14 max-w-7xl flex-wrap items-center gap-3 px-4 sm:flex-nowrap sm:px-6">
         <Link
           href="/"
-          className="flex shrink-0 items-center gap-2 font-semibold tracking-tight outline-none focus-visible:ring-3 focus-visible:ring-ring/50 rounded-md"
+          className="flex shrink-0 items-center gap-2 rounded-md font-heading text-[17px] font-semibold tracking-tight outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
         >
+          {/* 品牌标字形:全站唯一的装饰性紫罗兰 */}
           <span className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
             <FontAwesomeIcon
               icon={faWandMagicSparkles}
@@ -45,9 +46,7 @@ export function SiteHeader({ className }: { className?: string }) {
               aria-hidden
             />
           </span>
-          <span>
-            Viora<span className="text-primary"> Plugins</span>
-          </span>
+          <span>Viora</span>
         </Link>
 
         <div className="order-last w-full sm:order-none sm:w-auto sm:flex-1 sm:px-4">
@@ -57,7 +56,7 @@ export function SiteHeader({ className }: { className?: string }) {
           </Suspense>
         </div>
 
-        <Button variant="ghost" size="icon" asChild className="shrink-0">
+        <Button variant="ghost" asChild className="size-10 shrink-0 rounded-full">
           <a
             href={REPO_URL}
             target="_blank"
@@ -85,7 +84,7 @@ async function HeaderUser() {
   const user = await getCurrentUser();
   if (!user) {
     return (
-      <Button asChild size="sm" className="shrink-0">
+      <Button asChild className="h-10 shrink-0 px-4">
         <Link href="/login">登录</Link>
       </Button>
     );
@@ -156,7 +155,7 @@ function SearchBarSkeleton() {
   return (
     <div
       aria-hidden
-      className="h-9 w-full rounded-full bg-muted/60 sm:max-w-md"
+      className="h-10 w-full rounded-full bg-muted/60 sm:max-w-md"
     />
   );
 }

@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
 
 /**
- * 认证页通用卡片:深色圆角容器,内部放标题、表单与链接。
+ * 认证页通用卡片:暗色画布上的一块亮一档的面板,
+ * 靠 1px 细边框与亮度差分层,不用重阴影。
  */
 export function AuthCard({ children }: { children: ReactNode }) {
   return (
-    <div className="w-full rounded-2xl border bg-card/70 p-6 shadow-xl sm:p-8">
+    <div className="w-full rounded-2xl border bg-card p-6 sm:p-8">
       {children}
     </div>
   );

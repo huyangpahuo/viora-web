@@ -63,23 +63,23 @@ export default async function UserPage({ params }: { params: Params }) {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6">
-      <header className="flex flex-col gap-4 rounded-2xl border bg-card/70 p-6 sm:flex-row sm:items-center sm:gap-5">
+      <header className="flex flex-col gap-4 rounded-2xl border bg-card p-6 sm:flex-row sm:items-center sm:gap-5">
         {profile.avatar_url || profile.github_avatar_url ? (
           // 头像来自用户自填或 GitHub,域名不可枚举,使用原生 img
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={(profile.avatar_url ?? profile.github_avatar_url) as string}
             alt=""
-            className="size-18 rounded-full object-cover"
+            className="size-18 shrink-0 rounded-full object-cover"
           />
         ) : (
-          <span className="flex size-18 items-center justify-center rounded-full bg-muted text-2xl font-medium">
+          <span className="flex size-18 shrink-0 items-center justify-center rounded-full bg-muted text-2xl font-medium">
             {displayName.charAt(0).toUpperCase()}
           </span>
         )}
 
         <div className="min-w-0 flex-1 space-y-1">
-          <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
+          <h1 className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">
             {displayName}
           </h1>
           <p className="font-mono text-sm text-muted-foreground">
@@ -97,7 +97,7 @@ export default async function UserPage({ params }: { params: Params }) {
             href={`https://github.com/${encodeURIComponent(profile.github_login)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-sm text-muted-foreground transition-colors outline-none hover:border-foreground/25 hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
           >
             <FontAwesomeIcon icon={faGithub} className="size-4" aria-hidden />
             @{profile.github_login}

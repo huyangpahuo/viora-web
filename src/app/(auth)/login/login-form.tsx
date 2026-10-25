@@ -33,7 +33,9 @@ export function LoginForm() {
   return (
     <AuthCard>
       <div className="space-y-1.5">
-        <h1 className="text-2xl font-semibold tracking-tight">登录你的账户</h1>
+        <h1 className="font-heading text-2xl font-semibold tracking-tight">
+          登录你的账户
+        </h1>
         <p className="text-sm text-muted-foreground">
           欢迎回来,登录后可以发布与管理你的插件。
         </p>
@@ -102,7 +104,7 @@ export function LoginForm() {
               type="button"
               onClick={() => setShowPassword((value) => !value)}
               aria-label={showPassword ? "隐藏密码" : "显示密码"}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full p-2 text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 before:absolute before:-inset-1 before:rounded-full before:content-['']"
             >
               <FontAwesomeIcon
                 icon={showPassword ? faEyeSlash : faEye}

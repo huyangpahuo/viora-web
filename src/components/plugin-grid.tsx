@@ -15,7 +15,7 @@ export function PluginGrid({
   plugins: PluginRecord[];
   className?: string;
 }) {
-  const firstPriorityCount = 6;
+  const firstPreloadCount = 6;
 
   return (
     <div
@@ -28,7 +28,7 @@ export function PluginGrid({
         <PluginCard
           key={plugin.pluginId}
           plugin={plugin}
-          priority={index < firstPriorityCount}
+          preload={index < firstPreloadCount}
           className="mb-3 sm:mb-4"
         />
       ))}
@@ -47,13 +47,13 @@ export function PluginGridSkeleton({ count = 12 }: { count?: number }) {
       {Array.from({ length: count }, (_, i) => (
         <div
           key={i}
-          className="mb-3 break-inside-avoid rounded-xl border bg-card/40 sm:mb-4"
+          className="mb-3 break-inside-avoid rounded-2xl border bg-card sm:mb-4"
         >
           <div
-            className="bg-muted/50"
+            className="bg-muted/40"
             style={{ height: heights[i % heights.length] }}
           />
-          <div className="space-y-2 p-3">
+          <div className="space-y-2 p-3.5">
             <div className="h-3.5 w-2/3 rounded bg-muted/70" />
             <div className="h-3 w-1/3 rounded bg-muted/50" />
           </div>

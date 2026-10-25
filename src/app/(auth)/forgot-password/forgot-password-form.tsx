@@ -28,7 +28,7 @@ export function ForgotPasswordForm() {
             className="size-10 text-primary"
             aria-hidden
           />
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">
             重置链接已发送
           </h1>
           <p className="text-sm leading-relaxed text-muted-foreground">
@@ -50,7 +50,7 @@ export function ForgotPasswordForm() {
   return (
     <AuthCard>
       <div className="space-y-1.5">
-        <h1 className="text-2xl font-semibold tracking-tight">忘记密码</h1>
+        <h1 className="font-heading text-2xl font-semibold tracking-tight">忘记密码</h1>
         <p className="text-sm text-muted-foreground">
           输入注册邮箱,我们会发送一封包含重置链接的邮件。
         </p>

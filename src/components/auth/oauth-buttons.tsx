@@ -36,6 +36,7 @@ export function OAuthButtons() {
         <Button
           type="button"
           variant="outline"
+          size="lg"
           className="w-full"
           disabled={!supabase}
           onClick={() => signInWith("github")}
@@ -46,6 +47,7 @@ export function OAuthButtons() {
         <Button
           type="button"
           variant="outline"
+          size="lg"
           className="w-full"
           disabled={!supabase}
           onClick={() => signInWith("google")}

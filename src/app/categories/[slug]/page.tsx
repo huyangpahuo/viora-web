@@ -42,13 +42,13 @@ export default async function CategoryPage({
     <div className="mx-auto max-w-7xl space-y-5 px-4 py-6 sm:px-6">
       <Suspense fallback={<PluginGridSkeleton />}>
         <div className="space-y-5">
-          <section className="space-y-1 pt-2">
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+          <section className="space-y-1 pb-2 pt-10 sm:pt-14">
+            <h1 className="font-heading text-3xl font-medium tracking-tight text-balance sm:text-4xl">
               {category.name.zh}风格插件
             </h1>
             <p className="text-sm text-muted-foreground">
-              {category.name.en ? `${category.name.en} · ` : ""}
-              共 {category.count} 个插件 · 分类代码 {category.code}
+              {category.name.en ? `${category.name.en}。` : ""}
+              共 {category.count} 个插件。
             </p>
           </section>
 

@@ -32,7 +32,7 @@ export function CategoryChips({
             active={activeSlug === category.slug}
           >
             {category.name.zh ?? category.code}
-            <span className="ml-1 text-[10px] opacity-60">
+            <span className="ml-1.5 text-xs tabular-nums opacity-80">
               {category.count}
             </span>
           </ChipLink>
@@ -60,11 +60,11 @@ function ChipLink({
       href={href}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "inline-flex shrink-0 items-center rounded-full border px-3 py-1 text-xs font-medium whitespace-nowrap transition-colors outline-none",
+        "inline-flex min-h-10 shrink-0 items-center rounded-full border px-4 text-sm font-medium whitespace-nowrap transition-colors outline-none",
         "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
         active
-          ? "border-primary/50 bg-primary/15 text-foreground"
-          : "border-border/70 text-muted-foreground hover:border-primary/40 hover:text-foreground",
+          ? "border-transparent bg-foreground text-background"
+          : "border-border text-muted-foreground hover:border-foreground/25 hover:text-foreground",
       )}
     >
       {children}

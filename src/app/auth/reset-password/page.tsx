@@ -37,7 +37,7 @@ async function ResetPasswordPanel() {
 function AuthPageSkeleton() {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col items-center justify-center px-4 py-10">
-      <div className="w-full space-y-4 rounded-2xl border bg-card/40 p-6 sm:p-8">
+      <div className="w-full space-y-4 rounded-2xl border bg-card p-6 sm:p-8">
         <Skeleton className="h-7 w-40" />
         <Skeleton className="h-9 w-full" />
         <Skeleton className="h-9 w-full" />

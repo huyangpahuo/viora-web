@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -14,7 +13,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { PluginGrid } from "@/components/plugin-grid";
-import { PreviewPlaceholder } from "@/components/preview-placeholder";
+import {
+  PreviewPlaceholder,
+  previewTint,
+} from "@/components/preview-placeholder";
+import { PreviewImage } from "@/components/preview-image";
 import { DemoModeNotice, SnapshotNotice } from "@/components/notices";
 import { PluginNoticeBar } from "./notice-bar";
 import { Badge } from "@/components/ui/badge";
@@ -95,14 +98,23 @@ export default async function PluginDetailPage({
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
         {/* 预览区:有真实预览时显示图片;当前目录无预览字段,默认显示分类色占位 */}
         <div className="space-y-2">
-          <div className="overflow-hidden rounded-2xl border bg-card">
+          <div
+            className="overflow-hidden rounded-2xl border bg-card"
+            style={demo ? { backgroundColor: previewTint(plugin.category) } : undefined}
+          >
             {demo ? (
-              <Image
+              <PreviewImage
                 src={demo.src}
                 alt={demo.alt}
                 width={demo.width}
                 height={demo.height}
-                priority
+                preload
+                fallback={
+                  <PreviewPlaceholder
+                    plugin={plugin}
+                    className="aspect-[16/10]"
+                  />
+                }
                 className="h-auto w-full object-cover"
               />
             ) : (
@@ -117,9 +129,11 @@ export default async function PluginDetailPage({
         </div>
 
         {/* 元信息面板 */}
-        <div className="space-y-5 self-start rounded-2xl border bg-card/60 p-5 lg:sticky lg:top-20">
+        <div className="space-y-5 self-start rounded-2xl border bg-card p-5 lg:sticky lg:top-20">
           <div className="space-y-1.5">
-            <h1 className="text-2xl font-semibold tracking-tight">{name}</h1>
+            <h1 className="font-heading text-2xl font-semibold tracking-tight">
+              {name}
+            </h1>
             {secondaryName ? (
               <p className="text-sm text-muted-foreground">{secondaryName}</p>
             ) : null}
@@ -193,7 +207,7 @@ export default async function PluginDetailPage({
 
           <div className="flex flex-col gap-2">
             {packageUrl ? (
-              <Button asChild className="w-full">
+              <Button asChild size="lg" className="w-full">
                 <a href={packageUrl} download>
                   <FontAwesomeIcon icon={faDownload} className="size-4" aria-hidden />
                   下载安装包 .zip
@@ -204,7 +218,7 @@ export default async function PluginDetailPage({
                 安装包路径未通过校验,已隐藏下载链接。
               </p>
             )}
-            <Button variant="outline" asChild className="w-full">
+            <Button variant="outline" size="lg" asChild className="w-full">
               <a href={repositoryUrl} target="_blank" rel="noopener noreferrer">
                 <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="size-4" aria-hidden />
                 在 GitHub 查看仓库

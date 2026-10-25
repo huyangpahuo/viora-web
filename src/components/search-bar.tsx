@@ -49,13 +49,13 @@ export function SearchBar({ className }: { className?: string }) {
         onChange={(event) => setValue(event.target.value)}
         placeholder="搜索插件、风格或标签…"
         aria-label="搜索插件"
-        className="h-9 rounded-full bg-muted/60 pl-9 pr-8 text-sm"
+        className="h-10 rounded-full bg-muted/60 pl-9 pr-10 text-sm"
       />
       {value ? (
         <button
           type="button"
           aria-label="清空搜索"
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground transition-colors hover:text-foreground"
+          className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full p-2 text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 outline-none before:absolute before:-inset-1 before:rounded-full before:content-['']"
           onClick={() => {
             setValue("");
             if (currentQuery) router.push("/");

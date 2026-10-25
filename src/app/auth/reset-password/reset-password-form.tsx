@@ -26,7 +26,7 @@ export function ResetPasswordForm() {
   return (
     <AuthCard>
       <div className="space-y-1.5">
-        <h1 className="text-2xl font-semibold tracking-tight">设置新密码</h1>
+        <h1 className="font-heading text-2xl font-semibold tracking-tight">设置新密码</h1>
         <p className="text-sm text-muted-foreground">
           请输入你的新密码,完成后需要使用新密码重新登录。
         </p>
@@ -62,7 +62,7 @@ export function ResetPasswordForm() {
               type="button"
               onClick={() => setShowPassword((value) => !value)}
               aria-label={showPassword ? "隐藏密码" : "显示密码"}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full p-2 text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 before:absolute before:-inset-1 before:rounded-full before:content-['']"
             >
               <FontAwesomeIcon
                 icon={showPassword ? faEyeSlash : faEye}

@@ -7,8 +7,10 @@ import { categoryCodeToSlug, makeCategoryInfo } from "@/features/catalog/categor
 import { cn } from "@/lib/utils";
 
 /**
- * "暂无预览"占位图。目录中目前没有真实预览字段,
- * 占位图使用分类对应的色相做渐变,只表达分类归属,不冒充插件效果。
+ * "暂无预览"占位图与图片加载占位色。
+ * 目录中目前没有真实预览字段,占位图使用分类对应的色相,
+ * 但保持极低饱和、暗于卡片,像美术馆墙上的暗色展签;
+ * 只表达分类归属,不冒充插件效果,不做花哨渐变。
  */
 
 /** 20 个官方分类按顺序铺满色环;未知分类用代码哈希取色 */
@@ -40,13 +42,18 @@ const OFFICIAL_CODE_ORDER = [
   "Style.Cat.Experimental",
 ];
 
-function categoryHue(code: string | undefined): number {
+export function categoryHue(code: string | undefined): number {
   if (!code) return 265;
   const officialIndex = OFFICIAL_CODE_ORDER.indexOf(code);
   if (officialIndex >= 0) return OFFICIAL_HUES[officialIndex];
   let hash = 0;
   for (const ch of code) hash = (hash * 31 + ch.charCodeAt(0)) % 360;
   return hash;
+}
+
+/** 图片加载期间(以及失败兜底层)的暗色占位底色:与分类同色相、近无彩 */
+export function previewTint(code: string | undefined): string {
+  return `oklch(0.185 0.015 ${categoryHue(code)})`;
 }
 
 export function PreviewPlaceholder({
@@ -66,15 +73,14 @@ export function PreviewPlaceholder({
       role="img"
       aria-label={`${plugin.name.zh ?? plugin.name.en ?? plugin.pluginId}(暂无预览图)`}
       className={cn(
-        "flex w-full items-center justify-center",
-        "bg-[linear-gradient(140deg,oklch(0.34_0.09_var(--preview-hue)),oklch(0.21_0.05_var(--preview-hue)))]",
+        "preview-grain relative flex w-full items-center justify-center",
         className,
       )}
-      style={{ "--preview-hue": hue } as React.CSSProperties}
+      style={{ backgroundColor: `oklch(0.21 0.032 ${hue})` }}
     >
-      <div className="flex flex-col items-center gap-2 text-white/55">
-        <FontAwesomeIcon icon={faShapes} className="size-8" aria-hidden />
-        <span className="text-xs font-medium tracking-wide">{label}</span>
+      <div className="flex flex-col items-center gap-2 text-white/60">
+        <FontAwesomeIcon icon={faShapes} className="size-7" aria-hidden />
+        <span className="text-xs font-medium">{label}</span>
       </div>
     </div>
   );
@@ -96,7 +102,7 @@ export function CategoryLink({
     <Link
       href={`/categories/${categoryCodeToSlug(code)}`}
       className={cn(
-        "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground",
+        "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs text-muted-foreground transition-colors hover:border-foreground/25 hover:text-foreground",
         className,
       )}
     >

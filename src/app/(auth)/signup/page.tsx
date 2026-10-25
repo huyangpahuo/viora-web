@@ -18,7 +18,7 @@ export default function SignupPage() {
 
 function AuthPageSkeleton() {
   return (
-    <div className="w-full space-y-4 rounded-2xl border bg-card/40 p-6 sm:p-8">
+    <div className="w-full space-y-4 rounded-2xl border bg-card p-6 sm:p-8">
       <Skeleton className="h-7 w-40" />
       <Skeleton className="h-9 w-full" />
       <Skeleton className="h-9 w-full" />

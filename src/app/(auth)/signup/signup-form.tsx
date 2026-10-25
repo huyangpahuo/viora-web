@@ -57,7 +57,7 @@ export function SignupForm() {
             className="size-10 text-primary"
             aria-hidden
           />
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">
             验证邮件已发送
           </h1>
           <p className="text-sm leading-relaxed text-muted-foreground">
@@ -81,7 +81,9 @@ export function SignupForm() {
   return (
     <AuthCard>
       <div className="space-y-1.5">
-        <h1 className="text-2xl font-semibold tracking-tight">创建账户</h1>
+        <h1 className="font-heading text-2xl font-semibold tracking-tight">
+          创建账户
+        </h1>
         <p className="text-sm text-muted-foreground">
           注册后即可关联 GitHub 并发布你的插件。
         </p>
@@ -161,7 +163,7 @@ export function SignupForm() {
               type="button"
               onClick={() => setShowPassword((value) => !value)}
               aria-label={showPassword ? "隐藏密码" : "显示密码"}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-full p-2 text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 before:absolute before:-inset-1 before:rounded-full before:content-['']"
             >
               <FontAwesomeIcon
                 icon={showPassword ? faEyeSlash : faEye}
