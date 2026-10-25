@@ -8,18 +8,18 @@ import { getCurrentUser } from "@/features/auth/session";
 import { createProjectSchema, updateProjectSchema } from "@/features/projects/schemas";
 import type { ActionState } from "@/lib/actions/state";
 import { decryptToken } from "@/lib/crypto/token-crypto";
+import { uploadPackageToRepo, validatePackageFile } from "@/lib/github/package";
+import { uploadPreviewToRepo, validatePreviewFile } from "@/lib/github/previews";
 import {
+  AUTHOR_REPO_SUFFIX,
   commitTextFile,
   createUserRepo,
+  deleteFile,
   getJsonFile,
   getRepo,
 } from "@/lib/github/repos";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { SITE_URL } from "@/lib/supabase/config";
-import {
-  uploadPreviewImage,
-  validatePreviewFile,
-} from "@/lib/supabase/storage";
 import { createClient } from "@/lib/supabase/server";
 import type { CommunityPluginRow } from "@/features/catalog/database-types";
 
@@ -27,10 +27,16 @@ import type { CommunityPluginRow } from "@/features/catalog/database-types";
  * 社区插件项目相关的 Server Action。
  *
  * 发布流程:校验 → 登录校验 → 读 profiles 拿 GitHub 登录名 →
- * 解密 github_identities 中的令牌 → 查重 → 确保作者的单仓库
- * `<githubLogin>/viora-plugins` 存在 → 写入 plugin.json 与 registry.json →
- * (可选)上传转换前/后预览图 → 写入站点数据库 →
+ * 解密 github_identities 中的令牌 → 查重 → 确保作者的专属单仓库
+ * `<githubLogin>/viora-plugins-hub` 存在 → 预览图提交进仓库 →
+ * 写入 plugin.json 与 registry.json → 写入站点数据库 →
  * 失效 site-plugins 缓存 → 跳转详情页。
+ *
+ * 编辑流程:数据库更新成功后,尽力而为把最新内容同步回作者仓库
+ * (plugin.json 与 registry.json 条目),失败只提示、不阻断保存。
+ *
+ * 删除流程:真删除站点记录,再尽力清理仓库中的 plugin.json、
+ * registry 条目与安装包 zip;仓库本身与已上传的预览图保留。
  */
 
 const NOT_CONFIGURED_ERROR = "站点未配置登录服务,请先完成 Supabase 配置。";
@@ -38,8 +44,9 @@ const LINK_REQUIRED_ERROR = "请先关联 GitHub 账号后再发布插件。";
 const TOKEN_INVALID_ERROR = "GitHub 授权已失效,请到账号设置重新关联。";
 const SLUG_TAKEN_FIELD_ERROR = "该项目标识已被使用,请换一个";
 
-/** 每位作者只占用一个仓库,所有插件都登记在这里 */
-const PLUGIN_REPO_NAME = "viora-plugins";
+const NOT_FOUND_ERROR = "找不到该项目或没有权限";
+
+/** 每位作者只占用一个仓库(名称见 AUTHOR_REPO_SUFFIX),所有插件都登记在这里 */
 const PLUGIN_REPO_DESCRIPTION = "该作者在 Viora Plugins 发布的全部插件";
 const REGISTRY_PATH = "registry.json";
 
@@ -48,10 +55,14 @@ function formString(formData: FormData, key: string): string {
   return typeof value === "string" ? value : "";
 }
 
-/** 表单里的可选文件字段:未选择文件时浏览器会提交空的 File,视为缺失 */
+/**
+ * 表单里的文件字段:未选择文件时浏览器会提交一个 name 为空串的 File,
+ * 视为"没选"返回 null;"选了但内容为空"的文件保留下来,
+ * 由 validatePreviewFile 给出更明确的提示。
+ */
 function formFile(formData: FormData, key: string): File | null {
   const value = formData.get(key);
-  return value instanceof File && value.size > 0 ? value : null;
+  return value instanceof File && value.name !== "" ? value : null;
 }
 
 function formTags(formData: FormData): string[] {
@@ -69,6 +80,15 @@ async function getGithubLogin(
     .eq("id", userId)
     .maybeSingle();
   return data?.github_login ?? null;
+}
+
+/**
+ * 从 pluginId(<githubLogin>.<slug>)还原作者的 GitHub 登录名。
+ * GitHub 登录名不含 ".",据此拆分是稳定的,且不随用户后来换绑账号而变。
+ */
+function authorFromPluginId(pluginId: string): string | null {
+  const dot = pluginId.indexOf(".");
+  return dot > 0 ? pluginId.slice(0, dot) : null;
 }
 
 /** 用 service role 客户端取出并解密当前用户关联的 GitHub 令牌 */
@@ -98,51 +118,33 @@ async function getDecryptedGithubToken(
   return { ok: true, token };
 }
 
-/** 校验表单里的预览图文件,返回字段级错误(没有文件视为合法) */
+/** 校验表单里的预览图文件;required 时缺失文件也算错误,返回字段级错误 */
 function collectPreviewFieldErrors(
   previewBefore: File | null,
   previewAfter: File | null,
+  required = false,
 ): Record<string, string> {
   const errors: Record<string, string> = {};
   if (previewBefore) {
     const message = validatePreviewFile(previewBefore);
     if (message) errors.previewBefore = message;
+  } else if (required) {
+    errors.previewBefore = "请上传转换前效果图";
   }
   if (previewAfter) {
     const message = validatePreviewFile(previewAfter);
     if (message) errors.previewAfter = message;
+  } else if (required) {
+    errors.previewAfter = "请上传转换后效果图";
   }
   return errors;
 }
 
-type PreviewUploadOutcome = {
-  beforeUrl: string | null;
-  afterUrl: string | null;
-  error?: string;
-};
-
-/** 上传预览图(有文件才上传);失败直接中止发布,重试流程是幂等的 */
-async function uploadPreviews(
-  previewBefore: File | null,
-  previewAfter: File | null,
-  userId: string,
-  pluginId: string,
-): Promise<PreviewUploadOutcome> {
-  let beforeUrl: string | null = null;
-  let afterUrl: string | null = null;
-
-  if (previewBefore) {
-    const result = await uploadPreviewImage(previewBefore, userId, pluginId, "before");
-    if (!result.ok) return { beforeUrl, afterUrl, error: result.message };
-    beforeUrl = result.url;
-  }
-  if (previewAfter) {
-    const result = await uploadPreviewImage(previewAfter, userId, pluginId, "after");
-    if (!result.ok) return { beforeUrl, afterUrl, error: result.message };
-    afterUrl = result.url;
-  }
-
-  return { beforeUrl, afterUrl };
+/** 校验表单里的 zip 安装包(可选字段,缺失不报错),返回字段级错误 */
+function collectPackageFieldErrors(packageZip: File | null): Record<string, string> {
+  if (!packageZip) return {};
+  const message = validatePackageFile(packageZip);
+  return message ? { packageZip: message } : {};
 }
 
 type RegistryDoc = {
@@ -175,8 +177,61 @@ function today(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+/** 构建 plugin.json 与 registry 条目共用的字段集合(以站点数据库数据为准) */
+type PluginContentFields = {
+  pluginId: string;
+  author: string;
+  nameZh: string;
+  nameEn: string | null;
+  descriptionZh: string;
+  descriptionEn: string | null;
+  category: string;
+  version: string;
+  tags: string[];
+};
+
+/** plugin.json 内容 */
+function buildPluginJson(fields: PluginContentFields): string {
+  const pluginJson = {
+    pluginId: fields.pluginId,
+    name: {
+      zh: fields.nameZh,
+      ...(fields.nameEn ? { en: fields.nameEn } : {}),
+    },
+    author: fields.author,
+    category: fields.category,
+    version: fields.version,
+    description: {
+      zh: fields.descriptionZh,
+      ...(fields.descriptionEn ? { en: fields.descriptionEn } : {}),
+    },
+    tags: fields.tags,
+  };
+  return `${JSON.stringify(pluginJson, null, 2)}\n`;
+}
+
+/** registry.json 中的条目(与发布时的字段结构一致) */
+function buildRegistryPreset(fields: PluginContentFields): Record<string, unknown> {
+  return {
+    pluginId: fields.pluginId,
+    name: {
+      zh: fields.nameZh,
+      ...(fields.nameEn ? { en: fields.nameEn } : {}),
+    },
+    author: fields.author,
+    category: fields.category,
+    version: fields.version,
+    package: `packages/${fields.pluginId}.zip`,
+    description: {
+      zh: fields.descriptionZh,
+      ...(fields.descriptionEn ? { en: fields.descriptionEn } : {}),
+    },
+    tags: fields.tags,
+  };
+}
+
 /**
- * 把插件条目写入作者仓库的 registry.json:已存在同 pluginId 条目则替换,
+ * 把插件条目写入仓库的 registry.json:已存在同 pluginId 条目则替换,
  * 否则追加,并同步 count 与 updated。registry.json 缺失或损坏时重建。
  */
 async function upsertRegistryPreset(options: {
@@ -185,7 +240,6 @@ async function upsertRegistryPreset(options: {
   branch: string;
   preset: Record<string, unknown>;
   pluginId: string;
-  githubLogin: string;
 }): Promise<{ ok: true } | { ok: false; message: string }> {
   const fetched = await getJsonFile({
     token: options.token,
@@ -223,7 +277,43 @@ async function upsertRegistryPreset(options: {
   return { ok: true };
 }
 
-/** 确保作者的单仓库存在,返回 fullName 与默认分支 */
+/**
+ * 把 plugin.json 与 registry.json 条目同步到作者仓库;尽力而为,
+ * 全部成功返回 null,任一失败返回拼接好的中文原因。
+ */
+async function syncPluginFiles(options: {
+  token: string;
+  fullName: string;
+  branch: string;
+  fields: PluginContentFields;
+}): Promise<string | null> {
+  const pluginJsonCommit = await commitTextFile({
+    token: options.token,
+    fullName: options.fullName,
+    branch: options.branch,
+    path: `plugins/${options.fields.pluginId}/plugin.json`,
+    content: buildPluginJson(options.fields),
+  });
+
+  const registryResult = await upsertRegistryPreset({
+    token: options.token,
+    fullName: options.fullName,
+    branch: options.branch,
+    pluginId: options.fields.pluginId,
+    preset: buildRegistryPreset(options.fields),
+  });
+
+  const notices: string[] = [];
+  if (!pluginJsonCommit.ok) {
+    notices.push(`plugin.json 同步失败:${pluginJsonCommit.message}`);
+  }
+  if (!registryResult.ok) {
+    notices.push(`registry.json 同步失败:${registryResult.message}`);
+  }
+  return notices.length > 0 ? notices.join(";") : null;
+}
+
+/** 确保作者的专属仓库存在,返回 fullName 与默认分支 */
 async function ensurePluginRepo(
   token: string,
   githubLogin: string,
@@ -231,7 +321,7 @@ async function ensurePluginRepo(
   | { ok: true; fullName: string; branch: string; created: boolean }
   | { ok: false; state: ActionState }
 > {
-  const fullName = `${githubLogin}/${PLUGIN_REPO_NAME}`;
+  const fullName = `${githubLogin}/${AUTHOR_REPO_SUFFIX}`;
   const existing = await getRepo(token, fullName);
   if (!existing.ok) {
     if (existing.code === "unauthorized") {
@@ -245,12 +335,14 @@ async function ensurePluginRepo(
 
   const created = await createUserRepo({
     token,
-    name: PLUGIN_REPO_NAME,
+    name: AUTHOR_REPO_SUFFIX,
     description: PLUGIN_REPO_DESCRIPTION,
     homepage: SITE_URL,
   });
   if (!created.ok) {
-    // getRepo 返回 404 与创建之间存在并发窗口:仓库其实已存在,重查一次
+    // getRepo 返回 404 与创建之间存在并发窗口:仓库其实已存在,重查一次。
+    // 若 422 是大小写不同的仓库占用了名称(getRepo 已按名称校验返回 null),
+    // 重查仍为 null,会把创建接口的撞名提示原样带给用户。
     if (created.code === "name_taken") {
       const retry = await getRepo(token, fullName);
       if (retry.ok && retry.repo) {
@@ -276,6 +368,11 @@ async function ensurePluginRepo(
     branch: created.repo.defaultBranch,
     created: true,
   };
+}
+
+/** repo_full_name 是否指向作者的专属 hub 仓库(大小写不敏感) */
+function isAuthorHubRepo(repoFullName: string): boolean {
+  return repoFullName.toLowerCase().endsWith(`/${AUTHOR_REPO_SUFFIX}`);
 }
 
 export async function createProjectAction(
@@ -324,72 +421,94 @@ export async function createProjectAction(
     return { fieldErrors: { slug: SLUG_TAKEN_FIELD_ERROR } };
   }
 
-  // 预览图先做轻量校验(类型/大小),把错误尽早还给表单
+  // 预览图必填;先做轻量校验(类型/大小),把错误尽早还给表单
   const previewBefore = formFile(formData, "previewBefore");
   const previewAfter = formFile(formData, "previewAfter");
-  const previewFieldErrors = collectPreviewFieldErrors(previewBefore, previewAfter);
+  const previewFieldErrors = collectPreviewFieldErrors(previewBefore, previewAfter, true);
   if (Object.keys(previewFieldErrors).length > 0) {
     return { fieldErrors: previewFieldErrors };
   }
 
-  // 确保作者的单仓库存在(每位作者只占用 <githubLogin>/viora-plugins)
+  // 安装包 zip 可选;未上传时 package_path 留空,下载按钮回退到源码压缩包
+  const packageZip = formFile(formData, "packageZip");
+  const packageFieldErrors = collectPackageFieldErrors(packageZip);
+  if (Object.keys(packageFieldErrors).length > 0) {
+    return { fieldErrors: packageFieldErrors };
+  }
+
+  // 确保作者的专属仓库存在(每位作者只占用 <githubLogin>/viora-plugins-hub)
   const repoResult = await ensurePluginRepo(token, githubLogin);
   if (!repoResult.ok) return repoResult.state;
   const { fullName: repoFullName, branch: repoBranch } = repoResult;
 
-  // 预览图上传失败则中止发布;GitHub 侧操作幂等,可直接重试
-  const previews = await uploadPreviews(previewBefore, previewAfter, user.id, pluginId);
-  if (previews.error) return { error: previews.error };
+  // 预览图提交到作者的 hub 仓库(替代 Supabase Storage);
+  // 失败则中止发布,GitHub 侧操作幂等,可直接重试
+  let previewBeforeUrl: string | null = null;
+  let previewAfterUrl: string | null = null;
+  try {
+    if (previewBefore) {
+      previewBeforeUrl = await uploadPreviewToRepo({
+        file: previewBefore,
+        token,
+        hubFullName: repoFullName,
+        branch: repoBranch,
+        pluginId,
+        kind: "before",
+      });
+    }
+    if (previewAfter) {
+      previewAfterUrl = await uploadPreviewToRepo({
+        file: previewAfter,
+        token,
+        hubFullName: repoFullName,
+        branch: repoBranch,
+        pluginId,
+        kind: "after",
+      });
+    }
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "预览图上传失败,请稍后重试。",
+    };
+  }
 
-  const pluginJson = {
+  // 安装包 zip(可选)提交到 hub 仓库 packages/<pluginId>.zip;失败中止发布,可重试
+  let packagePath: string | null = null;
+  if (packageZip) {
+    try {
+      packagePath = await uploadPackageToRepo({
+        file: packageZip,
+        token,
+        fullName: repoFullName,
+        branch: repoBranch,
+        pluginId,
+      });
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error.message : "安装包上传失败,请稍后重试。",
+      };
+    }
+  }
+
+  const fields: PluginContentFields = {
     pluginId,
-    name: { zh: input.nameZh, en: input.nameEn || undefined },
     author: githubLogin,
+    nameZh: input.nameZh,
+    nameEn: input.nameEn || null,
+    descriptionZh: input.descriptionZh,
+    descriptionEn: input.descriptionEn || null,
     category: input.category,
     version: input.version,
-    description: { zh: input.descriptionZh, en: input.descriptionEn || undefined },
     tags: input.tags,
   };
 
-  // 提交 plugins/<pluginId>/plugin.json;尽力而为,失败不阻断发布
-  const pluginJsonCommit = await commitTextFile({
+  // 提交 plugin.json 与 registry.json;尽力而为,失败原因经 ?notice= 带到详情页
+  const syncNotice = await syncPluginFiles({
     token,
     fullName: repoFullName,
     branch: repoBranch,
-    path: `plugins/${pluginId}/plugin.json`,
-    content: `${JSON.stringify(pluginJson, null, 2)}\n`,
+    fields,
   });
-
-  // 更新 registry.json;同样尽力而为,失败原因经 ?notice= 带到详情页
-  const registryResult = await upsertRegistryPreset({
-    token,
-    fullName: repoFullName,
-    branch: repoBranch,
-    pluginId,
-    githubLogin,
-    preset: {
-      pluginId,
-      name: { zh: input.nameZh, ...(input.nameEn ? { en: input.nameEn } : {}) },
-      author: githubLogin,
-      category: input.category,
-      version: input.version,
-      package: `packages/${pluginId}.zip`,
-      description: {
-        zh: input.descriptionZh,
-        ...(input.descriptionEn ? { en: input.descriptionEn } : {}),
-      },
-      tags: input.tags,
-    },
-  });
-
-  const notices: string[] = [];
-  if (!pluginJsonCommit.ok) {
-    notices.push(`plugin.json 初始化失败:${pluginJsonCommit.message}`);
-  }
-  if (!registryResult.ok) {
-    notices.push(`registry.json 更新失败:${registryResult.message}`);
-  }
-  const notice = notices.length > 0 ? notices.join(";") : null;
 
   // 写入站点数据库(status 省略,走数据库默认 published)
   const { error: insertError } = await supabase.from("plugins").insert({
@@ -405,9 +524,9 @@ export async function createProjectAction(
     repo_full_name: repoFullName,
     repo_url: `https://github.com/${repoFullName}`,
     repo_branch: repoBranch,
-    preview_before_url: previews.beforeUrl,
-    preview_after_url: previews.afterUrl,
-    package_path: `packages/${pluginId}.zip`,
+    preview_before_url: previewBeforeUrl,
+    preview_after_url: previewAfterUrl,
+    package_path: packagePath,
   });
   if (insertError) {
     if (insertError.code === "23505") {
@@ -419,7 +538,7 @@ export async function createProjectAction(
   // 让插件目录(含 site 来源)立即读到新数据
   updateTag("site-plugins");
 
-  redirect(notice ? `${detailPath}?notice=${encodeURIComponent(notice)}` : detailPath);
+  redirect(syncNotice ? `${detailPath}?notice=${encodeURIComponent(syncNotice)}` : detailPath);
 }
 
 export async function updateProjectAction(
@@ -445,27 +564,81 @@ export async function updateProjectAction(
   const user = await getCurrentUser();
   if (!user) return { error: "请先登录" };
 
-  // 表单携带的是数据库行 id;先取出行拿到 plugin_id(上传路径要用)并确认所有权
+  const githubLogin = await getGithubLogin(supabase, user.id);
+
+  // 表单携带的是数据库行 id;取整行拿到 plugin_id / 仓库信息并确认所有权
   const { data: row, error: rowError } = await supabase
     .from("plugins")
-    .select("id, plugin_id")
+    .select("*")
     .eq("id", input.pluginId)
     .eq("owner_id", user.id)
     .maybeSingle();
   if (rowError) return { error: `更新失败:${rowError.message}` };
   if (!row) {
-    return { error: "找不到该项目或没有权限" };
+    return { error: NOT_FOUND_ERROR };
   }
 
-  // 可选替换预览图:不带文件就不改动现有 URL
+  // 可选替换预览图 / 安装包:带了新文件才上传并更新对应字段
   const previewBefore = formFile(formData, "previewBefore");
   const previewAfter = formFile(formData, "previewAfter");
   const previewFieldErrors = collectPreviewFieldErrors(previewBefore, previewAfter);
   if (Object.keys(previewFieldErrors).length > 0) {
     return { fieldErrors: previewFieldErrors };
   }
-  const previews = await uploadPreviews(previewBefore, previewAfter, user.id, row.plugin_id);
-  if (previews.error) return { error: previews.error };
+  const packageZip = formFile(formData, "packageZip");
+  const packageFieldErrors = collectPackageFieldErrors(packageZip);
+  if (Object.keys(packageFieldErrors).length > 0) {
+    return { fieldErrors: packageFieldErrors };
+  }
+
+  let githubToken: string | null = null;
+  let newBeforeUrl: string | null = null;
+  let newAfterUrl: string | null = null;
+  let newPackagePath: string | null = null;
+  if (previewBefore || previewAfter || packageZip) {
+    // 上传新文件需要仓库信息与令牌;失败中止保存,避免"以为换了文件其实没换"
+    if (!row.repo_full_name || !row.repo_branch) {
+      return { error: "文件上传失败:该项目缺少仓库信息,无法保存新文件。" };
+    }
+    const tokenResult = await getDecryptedGithubToken(user.id);
+    if (!tokenResult.ok) return { error: tokenResult.reason };
+    githubToken = tokenResult.token;
+    try {
+      if (previewBefore) {
+        newBeforeUrl = await uploadPreviewToRepo({
+          file: previewBefore,
+          token: githubToken,
+          hubFullName: row.repo_full_name,
+          branch: row.repo_branch,
+          pluginId: row.plugin_id,
+          kind: "before",
+        });
+      }
+      if (previewAfter) {
+        newAfterUrl = await uploadPreviewToRepo({
+          file: previewAfter,
+          token: githubToken,
+          hubFullName: row.repo_full_name,
+          branch: row.repo_branch,
+          pluginId: row.plugin_id,
+          kind: "after",
+        });
+      }
+      if (packageZip) {
+        newPackagePath = await uploadPackageToRepo({
+          file: packageZip,
+          token: githubToken,
+          fullName: row.repo_full_name,
+          branch: row.repo_branch,
+          pluginId: row.plugin_id,
+        });
+      }
+    } catch (error) {
+      return {
+        error: error instanceof Error ? error.message : "文件上传失败,请稍后重试。",
+      };
+    }
+  }
 
   const updates: Partial<CommunityPluginRow> = {
     name_zh: input.nameZh,
@@ -476,24 +649,190 @@ export async function updateProjectAction(
     tags: input.tags,
     version: input.version,
   };
-  if (previews.beforeUrl) updates.preview_before_url = previews.beforeUrl;
-  if (previews.afterUrl) updates.preview_after_url = previews.afterUrl;
+  if (newBeforeUrl) updates.preview_before_url = newBeforeUrl;
+  if (newAfterUrl) updates.preview_after_url = newAfterUrl;
+  if (newPackagePath) updates.package_path = newPackagePath;
 
-  // RLS 限定只能更新自己的行;select 确认受影响行数
+  // RLS 限定只能更新自己的行;select 整行,同步 GitHub 时以最新数据为准
   const { data, error } = await supabase
     .from("plugins")
     .update(updates)
     .eq("id", row.id)
     .eq("owner_id", user.id)
-    .select("plugin_id");
+    .select("*");
 
   if (error) return { error: `更新失败:${error.message}` };
-  if (!data || data.length === 0) {
-    return { error: "找不到该项目或没有权限" };
+  const updated = data?.[0];
+  if (!updated) {
+    return { error: NOT_FOUND_ERROR };
+  }
+
+  // 数据库更新成功后,尽力而为同步作者仓库(pluginId/slug 不可变,路径不变);
+  // repo_full_name 直接取自该行,旧的 per-plugin 仓库同样走 plugins/ 路径,
+  // 缺仓库信息时静默跳过,任何失败都不阻断保存结果
+  let syncNotice: string | null = null;
+  if (row.repo_full_name && row.repo_branch) {
+    if (!githubToken) {
+      const tokenResult = await getDecryptedGithubToken(user.id);
+      if (tokenResult.ok) githubToken = tokenResult.token;
+    }
+    if (githubToken) {
+      syncNotice = await syncPluginFiles({
+        token: githubToken,
+        fullName: row.repo_full_name,
+        branch: row.repo_branch,
+        fields: {
+          pluginId: updated.plugin_id,
+          author: authorFromPluginId(updated.plugin_id) ?? githubLogin ?? updated.plugin_id,
+          nameZh: updated.name_zh,
+          nameEn: updated.name_en,
+          descriptionZh: updated.description_zh ?? "",
+          descriptionEn: updated.description_en,
+          category: updated.category,
+          version: updated.version,
+          tags: updated.tags ?? [],
+        },
+      });
+    } else {
+      syncNotice = TOKEN_INVALID_ERROR;
+    }
   }
 
   updateTag("site-plugins");
-  return { ok: true, message: "项目已更新。" };
+  return {
+    ok: true,
+    message: syncNotice ? `已保存,但同步 GitHub 内容失败:${syncNotice}` : "项目已更新。",
+  };
+}
+
+/**
+ * 真删除项目:先删站点记录(RLS 限定只能删自己的行),
+ * 再尽力清理作者 hub 仓库中的 plugin.json、registry 条目与安装包 zip。
+ * GitHub 侧任何失败都不影响删除结果,只拼进返回的 message 提示;
+ * 仓库本身与已上传的预览图不会被删除。
+ */
+export async function deleteProjectAction(
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const rowId = formString(formData, "pluginId");
+  if (!rowId) return { error: NOT_FOUND_ERROR };
+  const confirmName = formString(formData, "confirm").trim();
+
+  const supabase = await createClient();
+  if (!supabase) return { error: NOT_CONFIGURED_ERROR };
+
+  const user = await getCurrentUser();
+  if (!user) return { error: "请先登录" };
+
+  // 先取整行:确认所有权,并保留清理 GitHub 内容所需的字段(RLS delete 也会兜底)
+  const { data: row, error: rowError } = await supabase
+    .from("plugins")
+    .select("*")
+    .eq("id", rowId)
+    .eq("owner_id", user.id)
+    .maybeSingle();
+  if (rowError) return { error: `删除失败:${rowError.message}` };
+  if (!row) return { error: NOT_FOUND_ERROR };
+
+  // 输入插件名确认,防止误删
+  if (confirmName !== row.name_zh) {
+    return { fieldErrors: { confirm: "输入的插件名称不一致,请核对后再试" } };
+  }
+
+  const { data: deleted, error: deleteError } = await supabase
+    .from("plugins")
+    .delete()
+    .eq("id", row.id)
+    .eq("owner_id", user.id)
+    .select("id");
+
+  if (deleteError) return { error: `删除失败:${deleteError.message}` };
+  if (!deleted || deleted.length === 0) {
+    return { error: NOT_FOUND_ERROR };
+  }
+
+  // 尽力而为清理 GitHub 内容;失败不影响删除结果
+  let cleanupNotice: string | null = null;
+  if (row.repo_branch && isAuthorHubRepo(row.repo_full_name)) {
+    const tokenResult = await getDecryptedGithubToken(user.id);
+    if (!tokenResult.ok) {
+      cleanupNotice = tokenResult.reason;
+    } else {
+      const notices: string[] = [];
+      const token = tokenResult.token;
+
+      // 移除 plugins/<pluginId>/plugin.json(预览图作为历史留档保留)
+      const pluginJsonPath = `plugins/${row.plugin_id}/plugin.json`;
+      const removed = await deleteFile({
+        token,
+        fullName: row.repo_full_name,
+        branch: row.repo_branch,
+        path: pluginJsonPath,
+      });
+      if (!removed.ok) {
+        notices.push(`${pluginJsonPath} 清理失败:${removed.message}`);
+      }
+
+      // 移除通过网页上传的安装包 zip(package_path 为空说明从未上传,跳过)
+      if (row.package_path) {
+        const removedZip = await deleteFile({
+          token,
+          fullName: row.repo_full_name,
+          branch: row.repo_branch,
+          path: row.package_path,
+        });
+        if (!removedZip.ok) {
+          notices.push(`${row.package_path} 清理失败:${removedZip.message}`);
+        }
+      }
+
+      // 从 registry.json 中移除该条目(条目本就不存在时不提交)
+      const registry = await getJsonFile({
+        token,
+        fullName: row.repo_full_name,
+        branch: row.repo_branch,
+        path: REGISTRY_PATH,
+      });
+      if (!registry.ok) {
+        notices.push(`registry.json 清理失败:${registry.message}`);
+      } else if (registry.file) {
+        const doc = parseRegistryDoc(registry.file.content);
+        if (doc) {
+          const presets = doc.presets.filter(
+            (entry) => !(isRecord(entry) && entry.pluginId === row.plugin_id),
+          );
+          if (presets.length !== doc.presets.length) {
+            const committed = await commitTextFile({
+              token,
+              fullName: row.repo_full_name,
+              branch: row.repo_branch,
+              path: REGISTRY_PATH,
+              content: `${JSON.stringify(
+                { ...doc, updated: today(), count: presets.length, presets },
+                null,
+                2,
+              )}\n`,
+              existingSha: registry.file.sha,
+            });
+            if (!committed.ok) {
+              notices.push(`registry.json 清理失败:${committed.message}`);
+            }
+          }
+        }
+      }
+
+      if (notices.length > 0) cleanupNotice = notices.join(";");
+    }
+  }
+
+  updateTag("site-plugins");
+  return {
+    ok: true,
+    message: cleanupNotice
+      ? `已删除,但同步清理 GitHub 内容失败:${cleanupNotice}`
+      : "项目已删除。",
+  };
 }
 
 export async function toggleProjectStatusAction(
@@ -502,7 +841,7 @@ export async function toggleProjectStatusAction(
 ): Promise<ActionState> {
   const pluginId = formString(formData, "pluginId");
   const status = formString(formData, "status");
-  if (!pluginId) return { error: "找不到该项目或没有权限" };
+  if (!pluginId) return { error: NOT_FOUND_ERROR };
   if (status !== "published" && status !== "hidden") {
     return { error: "状态参数无效" };
   }
@@ -522,7 +861,7 @@ export async function toggleProjectStatusAction(
 
   if (error) return { error: `状态更新失败:${error.message}` };
   if (!data || data.length === 0) {
-    return { error: "找不到该项目或没有权限" };
+    return { error: NOT_FOUND_ERROR };
   }
 
   updateTag("site-plugins");

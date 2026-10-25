@@ -40,7 +40,7 @@ export async function NewProjectPanel() {
               <StepNumber>3</StepNumber>
               <span>
                 新建项目时会自动在你的 GitHub 账号下创建一个公开仓库
-                viora-plugins,插件的元数据与安装包都登记在该仓库,
+                viora-plugins-hub,插件的元数据与安装包都登记在该仓库,
                 安装包直接从该仓库下载。
               </span>
             </li>

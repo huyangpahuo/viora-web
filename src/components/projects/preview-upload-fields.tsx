@@ -8,7 +8,7 @@ import { FieldError } from "@/components/projects/project-form-fields";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-/** 与服务端 storage.ts 保持一致的校验规则 */
+/** 与服务端 previews.ts(GitHub 图床)保持一致的校验规则 */
 const PREVIEW_MAX_BYTES = 5 * 1024 * 1024;
 const PREVIEW_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
 

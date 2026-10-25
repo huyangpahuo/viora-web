@@ -5,6 +5,7 @@ import { faCircleQuestion, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { requireUser } from "@/features/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import type { CommunityPluginRow } from "@/features/catalog/database-types";
+import { DeleteProjectForm } from "@/components/projects/delete-project-form";
 import { StatusToggleForm } from "@/components/projects/status-toggle-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -68,7 +69,7 @@ async function ProjectsRows({
         <h2 className="text-base font-medium">还没有发布过插件</h2>
         <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
           关联 GitHub 后新建项目,插件会自动登记到你 GitHub
-          账号名下的 viora-plugins 仓库并出现在画廊中。
+          账号名下的 viora-plugins-hub 仓库并出现在画廊中。
         </p>
         <Button asChild size="sm" className="mt-5">
           <Link href="/projects/new">去发布第一个插件</Link>
@@ -118,6 +119,7 @@ async function ProjectsRows({
                 <Link href={`/projects/${row.id}/edit`}>编辑</Link>
               </Button>
               <StatusToggleForm pluginId={row.id} status={row.status} />
+              <DeleteProjectForm pluginId={row.id} name={row.name_zh} />
             </div>
           </div>
         </li>

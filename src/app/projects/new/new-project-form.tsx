@@ -20,6 +20,7 @@ import {
   RequiredMark,
 } from "@/components/projects/project-form-fields";
 import { PreviewUploadFields } from "@/components/projects/preview-upload-fields";
+import { PackageUploadField } from "@/components/projects/package-upload-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -242,6 +243,8 @@ export function NewProjectForm({ githubLogin }: { githubLogin: string }) {
           serverErrors={state.fieldErrors}
         />
 
+        <PackageUploadField serverError={state.fieldErrors?.packageZip} />
+
         <div className="space-y-2 border-t pt-4">
           <Button
             type="submit"
@@ -261,7 +264,7 @@ export function NewProjectForm({ githubLogin }: { githubLogin: string }) {
             创建项目
           </Button>
           <p className="text-center text-xs text-muted-foreground">
-            发布后插件会登记到你 GitHub 账号({githubLogin})名下的 viora-plugins 仓库。
+            发布后插件会登记到你 GitHub 账号({githubLogin})名下的 viora-plugins-hub 仓库。
           </p>
           <p className="text-center text-xs text-muted-foreground">
             效果图公开可见,请确认你拥有上传图片的权利。

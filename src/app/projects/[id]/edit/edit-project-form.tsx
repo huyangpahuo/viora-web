@@ -17,6 +17,7 @@ import {
   RequiredMark,
 } from "@/components/projects/project-form-fields";
 import { PreviewUploadFields } from "@/components/projects/preview-upload-fields";
+import { PackageUploadField } from "@/components/projects/package-upload-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -171,6 +172,11 @@ export function EditProjectForm({ plugin }: { plugin: CommunityPluginRow }) {
           existingBeforeUrl={plugin.preview_before_url}
           existingAfterUrl={plugin.preview_after_url}
           serverErrors={state.fieldErrors}
+        />
+
+        <PackageUploadField
+          existingPackagePath={plugin.package_path}
+          serverError={state.fieldErrors?.packageZip}
         />
 
         <Button type="submit" size="lg" className="w-full" disabled={isPending}>

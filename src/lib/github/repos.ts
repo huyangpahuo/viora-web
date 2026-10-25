@@ -7,6 +7,13 @@ import "server-only";
 
 const API_BASE = "https://api.github.com";
 
+/**
+ * 作者专属仓库的固定名称(每位作者一个仓库,所有插件都登记在里面)。
+ * 刻意避开 "viora-plugins":GitHub 仓库名大小写不敏感,官方作者的
+ * Viora-plugins 仓库曾因重名导致社区插件内容被误提交进官方仓库。
+ */
+export const AUTHOR_REPO_SUFFIX = "viora-plugins-hub";
+
 function apiHeaders(token: string) {
   return {
     authorization: `Bearer ${token}`,
@@ -87,7 +94,8 @@ export async function createUserRepo(options: {
     return {
       ok: false,
       code: "name_taken",
-      message: "你的 GitHub 账号下已有同名仓库,换个项目标识或先去 GitHub 删除旧仓库",
+      message:
+        "你的 GitHub 账号下已有一个占用该名称的仓库,请到 GitHub 改名或删除后再发布",
     };
   }
   if (response.status === 401) {
@@ -162,6 +170,45 @@ export async function commitTextFile(options: {
   }
 }
 
+/**
+ * 向仓库提交(创建或更新)一个二进制文件,内容以 base64 传入(如预览图、zip 安装包)。
+ * existingSha 传入时为更新已有文件(覆盖 zip 时必带,否则 GitHub 返回 422)。
+ * 失败不阻断调用方流程,错误经返回值带出。
+ */
+export async function commitBinaryFile(options: {
+  token: string;
+  fullName: string;
+  branch: string;
+  path: string;
+  base64Content: string;
+  existingSha?: string;
+}): Promise<CommitFileResult> {
+  const prefix = `文件 ${options.path} 提交失败`;
+  try {
+    const response = await fetch(
+      `${API_BASE}/repos/${options.fullName}/contents/${encodeContentsPath(options.path)}`,
+      {
+        method: "PUT",
+        headers: apiHeaders(options.token),
+        body: JSON.stringify({
+          message: `chore: 由 Viora Plugins 网站上传 ${options.path}`,
+          content: options.base64Content,
+          branch: options.branch,
+          ...(options.existingSha ? { sha: options.existingSha } : {}),
+        }),
+      },
+    );
+    if (response.ok) return { ok: true };
+    const body = await response.text();
+    return mapContentsError(prefix, response.status, body);
+  } catch (error) {
+    return {
+      ok: false,
+      message: `${prefix}:${error instanceof Error ? error.message : "网络错误"}`,
+    };
+  }
+}
+
 export type RepoInfo = CreatedRepo;
 
 export type GetRepoResult =
@@ -194,6 +241,13 @@ export async function getRepo(token: string, fullName: string): Promise<GetRepoR
         !repo.owner?.login
       ) {
         return { ok: false, code: "unknown", message: "GitHub 返回的仓库信息不完整" };
+      }
+      // GitHub 对 GET /repos/{owner}/{repo} 做大小写不敏感的重定向:
+      // 请求 "a/viora-plugins-hub" 可能命中 "a/Viora-plugins" 这类大小写不同的仓库。
+      // 返回的 full_name 与期望名称(不区分大小写)不一致时按"不存在"处理,
+      // 让上层走创建流程并由 422 给出撞名提示,避免把内容误提交进他人仓库。
+      if (repo.full_name.toLowerCase() !== fullName.toLowerCase()) {
+        return { ok: true, repo: null };
       }
       return {
         ok: true,
@@ -273,6 +327,85 @@ export async function getJsonFile(options: {
     return {
       ok: false,
       message: `文件 ${options.path} 读取失败:${error instanceof Error ? error.message : "网络错误"}`,
+    };
+  }
+}
+
+export type GetFileShaResult =
+  | { ok: true; sha: string | null }
+  | { ok: false; message: string };
+
+/** 查询仓库中某个文件的 blob sha(覆盖或删除前取 existingSha 用);不存在返回 null */
+export async function getFileSha(options: {
+  token: string;
+  fullName: string;
+  branch: string;
+  path: string;
+}): Promise<GetFileShaResult> {
+  try {
+    const response = await fetch(
+      `${API_BASE}/repos/${options.fullName}/contents/${encodeContentsPath(options.path)}?ref=${encodeURIComponent(options.branch)}`,
+      { headers: apiHeaders(options.token) },
+    );
+    if (response.status === 404) return { ok: true, sha: null };
+    if (!response.ok) {
+      const body = await response.text();
+      // mapContentsError 的返回形状比本函数宽,失败分支收敛后原样带出
+      const mapped = mapContentsError(`文件 ${options.path} 读取失败`, response.status, body);
+      return mapped.ok === false ? mapped : { ok: true, sha: null };
+    }
+    const payload = (await response.json()) as { sha?: string };
+    if (typeof payload.sha !== "string") {
+      return { ok: false, message: `文件 ${options.path} 返回内容不完整` };
+    }
+    return { ok: true, sha: payload.sha };
+  } catch (error) {
+    return {
+      ok: false,
+      message: `文件 ${options.path} 读取失败:${error instanceof Error ? error.message : "网络错误"}`,
+    };
+  }
+}
+
+export type DeleteFileResult =
+  | { ok: true }
+  | { ok: false; message: string };
+
+/**
+ * 删除仓库中的一个文件:先取 sha,再走 contents API 的 DELETE。
+ * 文件不存在视为已删除,返回成功;删除阶段的 404 同理(并发窗口)。
+ */
+export async function deleteFile(options: {
+  token: string;
+  fullName: string;
+  branch: string;
+  path: string;
+}): Promise<DeleteFileResult> {
+  const prefix = `文件 ${options.path} 删除失败`;
+  const current = await getFileSha(options);
+  if (!current.ok) return { ok: false, message: current.message };
+  if (current.sha === null) return { ok: true };
+
+  try {
+    const response = await fetch(
+      `${API_BASE}/repos/${options.fullName}/contents/${encodeContentsPath(options.path)}`,
+      {
+        method: "DELETE",
+        headers: apiHeaders(options.token),
+        body: JSON.stringify({
+          message: `chore: 由 Viora Plugins 网站移除 ${options.path}`,
+          sha: current.sha,
+          branch: options.branch,
+        }),
+      },
+    );
+    if (response.ok || response.status === 404) return { ok: true };
+    const body = await response.text();
+    return mapContentsError(prefix, response.status, body);
+  } catch (error) {
+    return {
+      ok: false,
+      message: `${prefix}:${error instanceof Error ? error.message : "网络错误"}`,
     };
   }
 }
