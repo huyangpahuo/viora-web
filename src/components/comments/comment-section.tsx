@@ -1,3 +1,5 @@
+import { connection } from "next/server";
+
 import { getCurrentUser } from "@/features/auth/session";
 import type { PluginCommentRow } from "@/features/catalog/database-types";
 import type { CommentView } from "@/features/comments/types";
@@ -18,6 +20,10 @@ export async function CommentSection({
   pluginId: string;
   loginPath: string;
 }) {
+  // 相对时间依赖当前时刻(Date.now),必须逐请求渲染;
+  // connection() 跳过预渲染通道,避免被判定为不稳定值
+  await connection();
+
   const supabase = await createClient();
   if (!supabase) return null;
 
