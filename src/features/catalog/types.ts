@@ -11,6 +11,15 @@ export type LocalizedText = {
   en?: string;
 };
 
+/**
+ * 插件记录的数据来源,仅用于内部管道:
+ * - "registry":来自某个 GitHub 仓库的 registry.json(如 huyangpahuo/Viora-plugins,
+ *   它只是众多来源中的一个独立个体,没有任何特殊地位)
+ * - "site":作者在站点发布的项目,记录在数据库
+ * UI 一律平等展示,不区分、不标记来源。
+ */
+export type PluginSource = "registry" | "site";
+
 /** 单个插件的规范化记录。pluginId 是稳定业务标识,不允许用显示名代替。 */
 export type PluginRecord = {
   pluginId: string;
@@ -20,12 +29,24 @@ export type PluginRecord = {
   /** 原始分类代码,例如 "Style.Cat.Anime" */
   category?: string;
   version?: string;
-  /** 仓库内安装包相对路径,例如 "packages/builtin.viora.xxx.zip" */
+  /**
+   * registry 来源:该来源仓库内的安装包相对路径,例如 "packages/xxx.zip";
+   * site 来源:不使用(下载走 downloadUrl)
+   */
   package: string;
-  /** 插件作者自己的仓库地址(可选,当前目录中没有) */
+  /** site 来源:安装包直链,仅允许 github.com 域名,入库时由服务端拼接 */
+  downloadUrl?: string;
+  /** 插件作者的仓库地址 */
   repository?: string;
   tags?: string[];
   description?: LocalizedText;
+  source: PluginSource;
+  /** site 来源:发布者信息(registry 来源的作者只有 author 显示名) */
+  owner?: {
+    username: string;
+    displayName?: string;
+    avatarUrl?: string;
+  };
 };
 
 export type CatalogMeta = {
@@ -40,9 +61,12 @@ export type CatalogSource = "remote" | "snapshot";
 export type PluginCatalog = {
   meta: CatalogMeta;
   plugins: PluginRecord[];
-  /** 解析时跳过的无效条目数 */
+  /** 解析 registry 来源时跳过的无效条目数 */
   skipped: number;
+  /** registry 来源的目录状态(remote=在线拉取;snapshot=回退快照) */
   source: CatalogSource;
+  /** 其中来自站点数据库的插件数量(未配置 Supabase 时为 0) */
+  sitePluginCount: number;
 };
 
 export type CategoryInfo = {

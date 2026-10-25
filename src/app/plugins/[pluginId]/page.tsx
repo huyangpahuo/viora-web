@@ -1,26 +1,29 @@
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  ArrowLeft,
-  Download,
-  ExternalLink,
-  Package,
-  Tag,
-  User,
-} from "lucide-react";
+  faArrowLeft,
+  faArrowUpRightFromSquare,
+  faBox,
+  faDownload,
+  faTag,
+  faUser,
+} from "@fortawesome/free-solid-svg-icons";
 
 import { PluginGrid } from "@/components/plugin-grid";
 import { PreviewPlaceholder } from "@/components/preview-placeholder";
 import { DemoModeNotice, SnapshotNotice } from "@/components/notices";
+import { PluginNoticeBar } from "./notice-bar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getDemoPreview } from "@/features/catalog/demo";
 import { makeCategoryInfo } from "@/features/catalog/categories";
 import {
-  getPackageUrl,
+  getDownloadUrl,
   getPluginById,
   getPluginCatalog,
   getPluginRepositoryUrl,
@@ -65,7 +68,7 @@ export default async function PluginDetailPage({
 
   const related = await getRelatedPlugins(plugin);
   const catalog = await getPluginCatalog();
-  const packageUrl = getPackageUrl(plugin);
+  const packageUrl = getDownloadUrl(plugin);
   const repositoryUrl = getPluginRepositoryUrl(plugin);
   const demo = getDemoPreview(plugin);
   const name = plugin.name.zh ?? plugin.name.en ?? plugin.pluginId;
@@ -76,11 +79,16 @@ export default async function PluginDetailPage({
 
   return (
     <div className="mx-auto max-w-7xl space-y-8 px-4 py-6 sm:px-6">
+      {/* 创建项目后服务端跳转可能携带 ?notice=<plugin.json 初始化失败原因> */}
+      <Suspense fallback={null}>
+        <PluginNoticeBar />
+      </Suspense>
+
       <Link
         href="/"
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 rounded"
       >
-        <ArrowLeft className="size-4" aria-hidden />
+        <FontAwesomeIcon icon={faArrowLeft} className="size-4" aria-hidden />
         返回画廊
       </Link>
 
@@ -121,13 +129,36 @@ export default async function PluginDetailPage({
           </div>
 
           <dl className="space-y-2.5 text-sm">
-            {plugin.author ? (
-              <MetaRow icon={<User className="size-4" aria-hidden />} label="作者">
+            {plugin.owner ? (
+              <MetaRow icon={<FontAwesomeIcon icon={faUser} className="size-4" aria-hidden />} label="作者">
+                <Link
+                  href={`/users/${encodeURIComponent(plugin.owner.username)}`}
+                  className="inline-flex items-center gap-1.5 underline-offset-4 hover:text-foreground hover:underline"
+                >
+                  {plugin.owner.avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={plugin.owner.avatarUrl}
+                      alt=""
+                      className="size-6 rounded-full object-cover"
+                    />
+                  ) : (
+                    <span className="flex size-6 items-center justify-center rounded-full bg-muted text-xs">
+                      {(plugin.owner.displayName ?? plugin.owner.username)
+                        .charAt(0)
+                        .toUpperCase()}
+                    </span>
+                  )}
+                  {plugin.owner.displayName ?? plugin.owner.username}
+                </Link>
+              </MetaRow>
+            ) : plugin.author ? (
+              <MetaRow icon={<FontAwesomeIcon icon={faUser} className="size-4" aria-hidden />} label="作者">
                 {plugin.author}
               </MetaRow>
             ) : null}
             {plugin.category ? (
-              <MetaRow icon={<Tag className="size-4" aria-hidden />} label="分类">
+              <MetaRow icon={<FontAwesomeIcon icon={faTag} className="size-4" aria-hidden />} label="分类">
                 <Link
                   href={`/categories/${makeCategoryInfo(plugin.category, 0).slug}`}
                   className="underline-offset-4 hover:text-foreground hover:underline"
@@ -137,7 +168,7 @@ export default async function PluginDetailPage({
               </MetaRow>
             ) : null}
             {plugin.version ? (
-              <MetaRow icon={<Package className="size-4" aria-hidden />} label="版本">
+              <MetaRow icon={<FontAwesomeIcon icon={faBox} className="size-4" aria-hidden />} label="版本">
                 <Badge variant="secondary" className="font-mono text-xs">
                   v{plugin.version}
                 </Badge>
@@ -164,7 +195,7 @@ export default async function PluginDetailPage({
             {packageUrl ? (
               <Button asChild className="w-full">
                 <a href={packageUrl} download>
-                  <Download className="size-4" aria-hidden />
+                  <FontAwesomeIcon icon={faDownload} className="size-4" aria-hidden />
                   下载安装包 .zip
                 </a>
               </Button>
@@ -175,13 +206,12 @@ export default async function PluginDetailPage({
             )}
             <Button variant="outline" asChild className="w-full">
               <a href={repositoryUrl} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="size-4" aria-hidden />
+                <FontAwesomeIcon icon={faArrowUpRightFromSquare} className="size-4" aria-hidden />
                 在 GitHub 查看仓库
               </a>
             </Button>
             <p className="text-xs leading-relaxed text-muted-foreground">
-              安装包由官方 GitHub 仓库托管,与 Viora
-              客户端插件市场的下载来源完全一致;也可以直接在客户端市场中搜索安装。
+              安装包由插件作者托管在自己的 GitHub 仓库中。
             </p>
           </div>
         </div>

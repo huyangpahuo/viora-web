@@ -2,7 +2,14 @@
 
 import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
-import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import {
+  faCircleCheck,
+  faCircleInfo,
+  faCircleXmark,
+  faSpinner,
+  faTriangleExclamation,
+} from "@fortawesome/free-solid-svg-icons"
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()
@@ -13,19 +20,19 @@ const Toaster = ({ ...props }: ToasterProps) => {
       className="toaster group"
       icons={{
         success: (
-          <CircleCheckIcon className="size-4" />
+          <FontAwesomeIcon icon={faCircleCheck} className="size-4" />
         ),
         info: (
-          <InfoIcon className="size-4" />
+          <FontAwesomeIcon icon={faCircleInfo} className="size-4" />
         ),
         warning: (
-          <TriangleAlertIcon className="size-4" />
+          <FontAwesomeIcon icon={faTriangleExclamation} className="size-4" />
         ),
         error: (
-          <OctagonXIcon className="size-4" />
+          <FontAwesomeIcon icon={faCircleXmark} className="size-4" />
         ),
         loading: (
-          <Loader2Icon className="size-4 animate-spin" />
+          <FontAwesomeIcon icon={faSpinner} className="size-4 animate-spin" />
         ),
       }}
       style={

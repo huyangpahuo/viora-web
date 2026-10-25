@@ -46,15 +46,7 @@ function SiteFooter() {
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 text-xs text-muted-foreground sm:flex-row sm:px-6">
         <p>Viora Plugins · 风格插件画廊(阶段一:公开画廊)</p>
         <p>
-          插件目录与安装包来自{" "}
-          <a
-            href="https://github.com/huyangpahuo/Viora-plugins"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline-offset-4 hover:text-foreground hover:underline"
-          >
-            GitHub · huyangpahuo/Viora-plugins
-          </a>
+          插件安装包均托管在作者的 GitHub 仓库
         </p>
       </div>
     </footer>

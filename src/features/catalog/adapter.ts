@@ -43,14 +43,14 @@ export async function loadPluginCatalog(): Promise<PluginCatalog> {
       throw new Error(`registry request failed with status ${response.status}`);
     }
     const json: unknown = await response.json();
-    return { ...parseRegistry(json), source: "remote" };
+    return { ...parseRegistry(json), source: "remote", sitePluginCount: 0 };
   } catch (error) {
     console.error(
       "[catalog] 读取线上 registry.json 失败,回退到本地快照:",
       error instanceof Error ? error.message : error,
       error instanceof Error ? error.cause : "",
     );
-    return { ...parseRegistry(fallbackRegistry), source: "snapshot" };
+    return { ...parseRegistry(fallbackRegistry), source: "snapshot", sitePluginCount: 0 };
   }
 }
 
@@ -107,6 +107,7 @@ function adaptEntry(raw: unknown): PluginRecord | null {
     pluginId,
     name,
     package: pkg,
+    source: "registry",
   };
 
   if (typeof raw.presetId === "string" && raw.presetId) {

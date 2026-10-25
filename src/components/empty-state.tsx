@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ImageOff, SearchX } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faImages, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -14,7 +15,7 @@ export function EmptyState({
   return (
     <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
       <div className="flex size-14 items-center justify-center rounded-full bg-muted">
-        <SearchX className="size-7 text-muted-foreground" aria-hidden />
+        <FontAwesomeIcon icon={faMagnifyingGlass} className="size-7 text-muted-foreground" aria-hidden />
       </div>
       <div className="space-y-1">
         <h2 className="text-base font-medium">没有找到匹配的插件</h2>
@@ -37,7 +38,7 @@ export function EmptyState({
 export function NoPreviewNotice({ className }: { className?: string }) {
   return (
     <p className={cn("flex items-center justify-center gap-1.5 text-xs text-muted-foreground", className)}>
-      <ImageOff className="size-3.5" aria-hidden />
+      <FontAwesomeIcon icon={faImages} className="size-3.5" aria-hidden />
       当前目录暂未收录插件真实预览图,卡片显示为分类占位色块。
     </p>
   );

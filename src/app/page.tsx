@@ -26,16 +26,15 @@ export default function HomePage({ searchParams }: PageProps<"/">) {
   );
 }
 
-/** 目录摘要信息,全部来自 registry 的真实元数据 */
+/** 目录摘要信息:数量来自目录本身,不再突出 registry 的版本元数据 */
 async function CatalogFooter() {
   const catalog = await getPluginCatalog();
   return (
     <p className="pt-4 text-center text-xs text-muted-foreground">
       共 {catalog.plugins.length} 个插件
-      {catalog.meta.version !== undefined
-        ? ` · 目录版本 v${catalog.meta.version}`
+      {catalog.sitePluginCount > 0
+        ? ` · 其中 ${catalog.sitePluginCount} 个由作者在站点发布`
         : ""}
-      {catalog.meta.updated ? ` · 目录更新于 ${catalog.meta.updated}` : ""}
       {Number.isFinite(catalog.skipped) && catalog.skipped > 0
         ? ` · ${catalog.skipped} 个无效条目已跳过`
         : ""}

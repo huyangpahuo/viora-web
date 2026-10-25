@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { SearchX } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 
 import { Button } from "@/components/ui/button";
 
@@ -7,7 +8,7 @@ export default function PluginNotFound() {
   return (
     <div className="mx-auto flex max-w-7xl flex-col items-center justify-center gap-4 px-4 py-32 text-center sm:px-6">
       <div className="flex size-14 items-center justify-center rounded-full bg-muted">
-        <SearchX className="size-7 text-muted-foreground" aria-hidden />
+        <FontAwesomeIcon icon={faMagnifyingGlass} className="size-7 text-muted-foreground" aria-hidden />
       </div>
       <div className="space-y-1">
         <h1 className="text-lg font-semibold">插件不存在</h1>

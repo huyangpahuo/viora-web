@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Shapes } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faShapes } from "@fortawesome/free-solid-svg-icons";
 
 import type { PluginRecord } from "@/features/catalog/types";
 import { categoryCodeToSlug, makeCategoryInfo } from "@/features/catalog/categories";
@@ -72,7 +73,7 @@ export function PreviewPlaceholder({
       style={{ "--preview-hue": hue } as React.CSSProperties}
     >
       <div className="flex flex-col items-center gap-2 text-white/55">
-        <Shapes className="size-8" aria-hidden />
+        <FontAwesomeIcon icon={faShapes} className="size-8" aria-hidden />
         <span className="text-xs font-medium tracking-wide">{label}</span>
       </div>
     </div>

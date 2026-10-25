@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search, X } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -36,7 +37,8 @@ export function SearchBar({ className }: { className?: string }) {
         router.push(q ? `/?q=${encodeURIComponent(q)}` : "/");
       }}
     >
-      <Search
+      <FontAwesomeIcon
+        icon={faMagnifyingGlass}
         className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
         aria-hidden
       />
@@ -59,7 +61,7 @@ export function SearchBar({ className }: { className?: string }) {
             if (currentQuery) router.push("/");
           }}
         >
-          <X className="size-4" aria-hidden />
+          <FontAwesomeIcon icon={faXmark} className="size-4" aria-hidden />
         </button>
       ) : null}
     </form>

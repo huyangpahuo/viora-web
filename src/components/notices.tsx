@@ -1,4 +1,5 @@
-import { CloudOff } from "lucide-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCloud } from "@fortawesome/free-solid-svg-icons";
 
 import { DEMO_PREVIEWS_ENABLED } from "@/features/catalog/demo";
 import { cn } from "@/lib/utils";
@@ -13,7 +14,7 @@ export function SnapshotNotice({ className }: { className?: string }) {
         className,
       )}
     >
-      <CloudOff className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+      <FontAwesomeIcon icon={faCloud} className="mt-0.5 size-3.5 shrink-0" aria-hidden />
       <p>
         暂时无法连接 GitHub,当前展示的是随网站发布的目录快照,数据可能不是最新。
       </p>

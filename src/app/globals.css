@@ -134,4 +134,9 @@
     @apply font-sans;
     color-scheme: dark;
   }
+  /* Font Awesome 内联 SVG 基线(通过 react-fontawesome 使用,无需完整 CSS 包) */
+  .svg-inline--fa {
+    height: 1em;
+    vertical-align: -0.125em;
+  }
 }
