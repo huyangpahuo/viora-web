@@ -5,7 +5,7 @@ import { makeCategoryInfo } from "@/features/catalog/categories";
 import type { PluginRecord } from "@/features/catalog/types";
 import {
   PreviewPlaceholder,
-  previewTint,
+  previewTintClass,
 } from "@/components/preview-placeholder";
 import { PreviewImage } from "@/components/preview-image";
 import { cn } from "@/lib/utils";
@@ -39,34 +39,28 @@ export function PluginCard({
         className,
       )}
     >
+      {/* 图片容器不写任何内联样式:Dark Reader 等扩展会注入
+          --darkreader-* 变量造成水合不匹配。图片用固有宽高,
+          天然锁定纵横比(无布局抖动),容器底色用静态类名。 */}
       <div
-        className="relative w-full overflow-hidden [background-color:var(--preview-tint)]"
-        style={
-          demo
-            ? {
-                aspectRatio: `${demo.width} / ${demo.height}`,
-                // 颜色经 CSS 变量消费:内联 background-color 会成为
-                // Dark Reader 等插件的注入点,导致 hydration 误报
-                "--preview-tint": previewTint(plugin.category),
-              } as React.CSSProperties
-            : undefined
-        }
+        className={cn(
+          "relative w-full overflow-hidden",
+          previewTintClass(plugin.category),
+        )}
       >
         {demo ? (
           <>
             <PreviewImage
               src={demo.src}
               alt={demo.alt}
-              fill
+              width={demo.width}
+              height={demo.height}
               preload={preload}
               fallback={
-                <PreviewPlaceholder
-                  plugin={plugin}
-                  className="absolute inset-0"
-                />
+                <PreviewPlaceholder plugin={plugin} className="aspect-[4/3]" />
               }
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 25vw, 20vw"
-              className="object-cover group-hover:scale-[1.02]"
+              className="block h-auto w-full object-cover group-hover:scale-[1.02]"
             />
             {/* hover 提亮:用一层低透明白的 opacity 过渡,只动 opacity */}
             <span

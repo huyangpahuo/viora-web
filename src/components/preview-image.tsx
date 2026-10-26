@@ -46,6 +46,10 @@ export function PreviewImage({
     <Image
       ref={imgRef}
       alt={alt}
+      // next/image 会给 <img> 输出 style="color:transparent";
+      // Dark Reader 等扩展会往这行内样式注入 --darkreader-* 变量,
+      // 造成属性不匹配的假警报。只抑制该元素自身的属性差异。
+      suppressHydrationWarning
       // 预加载图用 eager + preload;其余显式声明 lazy + async
       loading={preload ? "eager" : "lazy"}
       decoding="async"

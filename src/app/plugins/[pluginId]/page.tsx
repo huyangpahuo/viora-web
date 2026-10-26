@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
+
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,7 +16,7 @@ import {
 import { PluginGrid } from "@/components/plugin-grid";
 import {
   PreviewPlaceholder,
-  previewTint,
+  previewTintClass,
 } from "@/components/preview-placeholder";
 import { PreviewImage } from "@/components/preview-image";
 import { BeforeAfterSlider } from "@/components/before-after-slider";
@@ -30,6 +31,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 import { getDemoPreview } from "@/features/catalog/demo";
 import { makeCategoryInfo } from "@/features/catalog/categories";
 import {
@@ -126,12 +128,10 @@ export default async function PluginDetailPage({
             </div>
           ) : (
             <div
-              className="overflow-hidden rounded-2xl border bg-card [background-color:var(--preview-tint)]"
-              style={
-                demo
-                  ? ({ "--preview-tint": previewTint(plugin.category) } as React.CSSProperties)
-                  : undefined
-              }
+              className={cn(
+                "overflow-hidden rounded-2xl border bg-card",
+                demo ? previewTintClass(plugin.category) : "",
+              )}
             >
               {demo ? (
                 <PreviewImage

@@ -51,9 +51,61 @@ export function categoryHue(code: string | undefined): number {
   return hash;
 }
 
-/** 图片加载期间(以及失败兜底层)的暗色占位底色:与分类同色相、近无彩 */
-export function previewTint(code: string | undefined): string {
-  return `oklch(0.185 0.015 ${categoryHue(code)})`;
+/**
+ * 图片加载期间(以及失败兜底层)的暗色占位底色类。
+ *
+ * 用静态 Tailwind 类而不是内联 style:Dark Reader 等暗色插件会改写
+ * 内联样式与颜色型 CSS 变量(注入 --darkreader-* 属性),导致 React
+ * 水合时报属性不匹配。类名不参与这类注入。
+ *
+ * 色相按 30° 分档,12 个类名必须写成字面量以便 Tailwind 扫描生成。
+ */
+const TINT_CLASS_BY_BUCKET: Record<number, string> = {
+  0: "bg-[oklch(0.185_0.015_0)]",
+  30: "bg-[oklch(0.185_0.015_30)]",
+  60: "bg-[oklch(0.185_0.015_60)]",
+  90: "bg-[oklch(0.185_0.015_90)]",
+  120: "bg-[oklch(0.185_0.015_120)]",
+  150: "bg-[oklch(0.185_0.015_150)]",
+  180: "bg-[oklch(0.185_0.015_180)]",
+  210: "bg-[oklch(0.185_0.015_210)]",
+  240: "bg-[oklch(0.185_0.015_240)]",
+  270: "bg-[oklch(0.185_0.015_270)]",
+  300: "bg-[oklch(0.185_0.015_300)]",
+  330: "bg-[oklch(0.185_0.015_330)]",
+};
+
+/** 占位块用的稍亮一档底色(同为静态类) */
+const PLACEHOLDER_CLASS_BY_BUCKET: Record<number, string> = {
+  0: "bg-[oklch(0.21_0.032_0)]",
+  30: "bg-[oklch(0.21_0.032_30)]",
+  60: "bg-[oklch(0.21_0.032_60)]",
+  90: "bg-[oklch(0.21_0.032_90)]",
+  120: "bg-[oklch(0.21_0.032_120)]",
+  150: "bg-[oklch(0.21_0.032_150)]",
+  180: "bg-[oklch(0.21_0.032_180)]",
+  210: "bg-[oklch(0.21_0.032_210)]",
+  240: "bg-[oklch(0.21_0.032_240)]",
+  270: "bg-[oklch(0.21_0.032_270)]",
+  300: "bg-[oklch(0.21_0.032_300)]",
+  330: "bg-[oklch(0.21_0.032_330)]",
+};
+
+function hueBucket(code: string | undefined): number {
+  return ((Math.round(categoryHue(code) / 30) * 30) % 360 + 360) % 360;
+}
+
+/** 卡片图片容器底色(近无彩,与分类同色相) */
+export function previewTintClass(code: string | undefined): string {
+  return TINT_CLASS_BY_BUCKET[hueBucket(code)] ?? TINT_CLASS_BY_BUCKET[0];
+}
+
+/** 占位块底色(稍亮一档) */
+export function previewPlaceholderClass(code: string | undefined): string {
+  return (
+    PLACEHOLDER_CLASS_BY_BUCKET[hueBucket(code)] ??
+    PLACEHOLDER_CLASS_BY_BUCKET[0]
+  );
 }
 
 export function PreviewPlaceholder({
@@ -63,7 +115,6 @@ export function PreviewPlaceholder({
   plugin: PluginRecord;
   className?: string;
 }) {
-  const hue = categoryHue(plugin.category);
   const label = plugin.category
     ? (makeCategoryInfo(plugin.category, 0).name.zh)
     : "Plugin";
@@ -73,12 +124,10 @@ export function PreviewPlaceholder({
       role="img"
       aria-label={`${plugin.name.zh ?? plugin.name.en ?? plugin.pluginId}(暂无预览图)`}
       className={cn(
-        "preview-grain relative flex w-full items-center justify-center [background-color:var(--preview-tint)]",
+        "preview-grain relative flex w-full items-center justify-center",
+        previewPlaceholderClass(plugin.category),
         className,
       )}
-      style={
-        { "--preview-tint": `oklch(0.21 0.032 ${hue})` } as React.CSSProperties
-      }
     >
       <div className="flex flex-col items-center gap-2 text-white/60">
         <FontAwesomeIcon icon={faShapes} className="size-7" aria-hidden />
