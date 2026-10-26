@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { getCardPreview } from "@/features/catalog/demo";
+import { getDemoPreview } from "@/features/catalog/demo";
 import { makeCategoryInfo } from "@/features/catalog/categories";
 import type { PluginRecord } from "@/features/catalog/types";
 import {
@@ -26,7 +26,7 @@ export function PluginCard({
   className?: string;
 }) {
   const name = plugin.name.zh ?? plugin.name.en ?? plugin.pluginId;
-  const preview = getCardPreview(plugin);
+  const demo = getDemoPreview(plugin);
 
   return (
     <Link
@@ -42,9 +42,9 @@ export function PluginCard({
       <div
         className="relative w-full overflow-hidden [background-color:var(--preview-tint)]"
         style={
-          preview.kind === "image"
+          demo
             ? {
-                aspectRatio: `${preview.width} / ${preview.height}`,
+                aspectRatio: `${demo.width} / ${demo.height}`,
                 // 颜色经 CSS 变量消费:内联 background-color 会成为
                 // Dark Reader 等插件的注入点,导致 hydration 误报
                 "--preview-tint": previewTint(plugin.category),
@@ -52,11 +52,11 @@ export function PluginCard({
             : undefined
         }
       >
-        {preview.kind === "image" ? (
+        {demo ? (
           <>
             <PreviewImage
-              src={preview.src}
-              alt={preview.alt}
+              src={demo.src}
+              alt={demo.alt}
               fill
               preload={preload}
               fallback={
