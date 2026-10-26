@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleQuestion } from "@fortawesome/free-solid-svg-icons";
+import { faCircleQuestion, faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { requireUser } from "@/features/auth/session";
 import { createClient } from "@/lib/supabase/server";
@@ -20,8 +20,15 @@ export async function ProjectsList() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 px-4 py-8 sm:px-6">
-      {/* 新建入口在左侧导航栏的"+",这里不再重复放置 */}
-      <h1 className="text-2xl font-semibold tracking-tight">我的项目</h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-semibold tracking-tight">我的项目</h1>
+        <Button asChild>
+          <Link href="/projects/new">
+            <FontAwesomeIcon icon={faPlus} className="size-4" aria-hidden />
+            新建项目
+          </Link>
+        </Button>
+      </div>
 
       {!supabase ? (
         <div className="rounded-2xl border bg-card/70 p-8 text-center">
